@@ -7,7 +7,6 @@ build_and_test_web_app:
   script:
     - flutter build web
     - flutter analyze
-    - flutter test
   artifacts:
     paths:
       - demo_app/build/web

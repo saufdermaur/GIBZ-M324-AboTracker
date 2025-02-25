@@ -1,3 +1,4 @@
+# Web Build and Test
 build_and_test_web_app:
   stage: build
   image: ghcr.io/cirruslabs/flutter:stable
@@ -10,6 +11,33 @@ build_and_test_web_app:
     paths:
       - build/web
 
+# Windows Build
+build_and_test_windows_app:
+  stage: build
+  image: ghcr.io/cirruslabs/flutter:stable
+  before_script:
+    - flutter pub get
+  script:
+    - flutter build windows
+    - flutter analyze
+  artifacts:
+    paths:
+      - build/windows
+
+# Android Build
+build_and_test_android_app:
+  stage: build
+  image: ghcr.io/cirruslabs/flutter:stable
+  before_script:
+    - flutter pub get
+  script:
+    - flutter build apk --release
+    - flutter analyze
+  artifacts:
+    paths:
+      - build/app/outputs/flutter-apk
+
+# Deploy Preview for Web
 deploy_preview:
   stage: deploy
   image: node:16.16.0
@@ -23,6 +51,7 @@ deploy_preview:
     - vercel build --token=$VERCEL_TOKEN
     - vercel deploy --prebuilt --token=$VERCEL_TOKEN
 
+# Deploy Production for Web
 deploy_production:
   stage: deploy
   image: node:16.16.0

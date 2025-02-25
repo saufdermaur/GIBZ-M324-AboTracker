@@ -1,7 +1,8 @@
 build_and_test_web_app:
   stage: build
-  image: cirrusci/flutter:stable
+  image: ghcr.io/cirruslabs/flutter:stable
   before_script:
+    - cd demo_app
     - flutter pub get
   script:
     - flutter build web
@@ -9,14 +10,14 @@ build_and_test_web_app:
     - flutter test
   artifacts:
     paths:
-      - build/web
+      - demo_app/build/web
  
 pages:
   stage: deploy
   script:
-    - cp -r build/web public
+    - cp -r demo_app/build/web public
   artifacts:
     paths:
       - public
   only:
-    - master
+    - main

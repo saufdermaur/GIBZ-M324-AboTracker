@@ -1,28 +1,47 @@
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .pub-cache
+
+stages:
+  - test
+  - build
+  - deploy
+
+# Flutter Analyze Job (runs in test stage)
+flutter_analyze:
+  stage: test
+  image: ghcr.io/cirruslabs/flutter:stable
+  before_script:
+    - flutter pub get
+  script:
+    - flutter analyze
+
 # Web Build and Test
-build_and_test_web_app:
+build_web_app:
   stage: build
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
     - flutter pub get
   script:
     - flutter build web --base-href "/"
-    - flutter analyze
   artifacts:
     paths:
       - build/web
+    expire_in: 1 week
 
 # Android Build
-build_and_test_android_app:
+build_android_app:
   stage: build
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
     - flutter pub get
   script:
     - flutter build apk --release
-    - flutter analyze
   artifacts:
     paths:
       - build/app/outputs/flutter-apk
+    expire_in: 1 week
 
 # Deploy Preview for Web
 deploy_preview:
@@ -30,6 +49,8 @@ deploy_preview:
   image: node:16.16.0
   except:
     - main
+  dependencies:
+    - build_web_app
   script:
     - npm install --global vercel
     - vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
@@ -44,6 +65,8 @@ deploy_production:
   image: node:16.16.0
   only:
     - main
+  dependencies:
+    - build_web_app
   script:
     - npm install --global vercel
     - vercel pull --yes --environment=production --token=$VERCEL_TOKEN

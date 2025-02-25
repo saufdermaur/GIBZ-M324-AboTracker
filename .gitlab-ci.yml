@@ -13,8 +13,8 @@ flutter_analyze:
   stage: test
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
+    - echo "$DOTENV_FILE" > .env
     - flutter pub get
-    - echo "$ENV_FILE" > .env
   script:
     - flutter analyze
 
@@ -23,6 +23,7 @@ build_web_app:
   stage: build
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
+    - echo "$DOTENV_FILE" > .env
     - flutter pub get
   script:
     - flutter build web --base-href "/"
@@ -36,6 +37,7 @@ build_android_app:
   stage: build
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
+    - echo "$DOTENV_FILE" > .env
     - flutter pub get
   script:
     - flutter build apk --release

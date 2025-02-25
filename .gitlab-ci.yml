@@ -10,17 +10,6 @@ build_and_test_web_app:
     paths:
       - build/web
 
-#pages:
-#  stage: deploy
-#  script:
-#    - mkdir -p public
-#    - cp -r demo_app/build/web/. public/
-#  artifacts:
-#    paths:
-#      - public
-#  only:
-#    - main
-    
 deploy_preview:
   stage: deploy
   image: node:16.16.0

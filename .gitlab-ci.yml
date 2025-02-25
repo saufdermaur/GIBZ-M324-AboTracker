@@ -1,17 +1,22 @@
-image: cirrusci/flutter:latest
-
-stages:
-  - build
-  - deploy
-
-build_android:
+build_and_test_web_app:
   stage: build
+  image: cirrusci/flutter:stable
+  before_script:
+    - flutter pub get
   script:
-    - flutter packages get
-    - flutter build apk --release
-
-deploy_android:
+    - flutter build web
+    - flutter analyze
+    - flutter test
+  artifacts:
+    paths:
+      - build/web
+ 
+pages:
   stage: deploy
   script:
-    - flutter build appbundle --release
-    - echo "Deploying to Google Play Store"
+    - cp -r build/web public
+  artifacts:
+    paths:
+      - public
+  only:
+    - master

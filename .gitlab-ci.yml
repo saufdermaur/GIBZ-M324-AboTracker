@@ -16,6 +16,19 @@ flutter_analyze:
     - flutter pub get
   script:
     - flutter analyze
+  
+# Flutter check Code-Quality
+code_quality:
+  stage: test
+  image: ghcr.io/cirruslabs/flutter:stable
+  before_script:
+    - flutter pub global activate dart_code_metrics
+    - export PATH="$PATH:$HOME/.pub-cache/bin"
+  script:
+    - metrics lib -r codeclimate  > gl-code-quality-report.json
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
 
 # Web Build
 build_web_app:

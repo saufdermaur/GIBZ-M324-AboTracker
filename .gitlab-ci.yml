@@ -50,6 +50,6 @@ deploy_production:
     #- mkdir -p public
     #- cp -r demo_app/build/web/. public/
     - vercel build --prod --token=$VERCEL_TOKEN
-    - vercel deploy --prebuilt --prod --
+    - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
 
     #- vercel deploy demo_app/build/web --prod --yes --token=$VERCEL_TOKEN

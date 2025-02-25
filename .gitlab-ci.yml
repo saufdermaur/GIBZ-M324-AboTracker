@@ -11,19 +11,6 @@ build_and_test_web_app:
     paths:
       - build/web
 
-# Windows Build
-build_and_test_windows_app:
-  stage: build
-  image: ghcr.io/cirruslabs/flutter:stable
-  before_script:
-    - flutter pub get
-  script:
-    - flutter build windows
-    - flutter analyze
-  artifacts:
-    paths:
-      - build/windows
-
 # Android Build
 build_and_test_android_app:
   stage: build

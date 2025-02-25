@@ -8,7 +8,7 @@ stages:
   - build
   - deploy
 
-# Flutter Analyze Job (runs in test stage)
+# Flutter Analyze Job
 flutter_analyze:
   stage: test
   image: ghcr.io/cirruslabs/flutter:stable
@@ -17,7 +17,7 @@ flutter_analyze:
   script:
     - flutter analyze
 
-# Web Build and Test
+# Web Build
 build_web_app:
   stage: build
   image: ghcr.io/cirruslabs/flutter:stable

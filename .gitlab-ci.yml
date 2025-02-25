@@ -5,7 +5,7 @@ build_and_test_web_app:
     - cd demo_app
     - flutter pub get
   script:
-    - flutter build web
+    - flutter build web --base-href "/Squash-Tracker/"
     - flutter analyze
   artifacts:
     paths:
@@ -14,7 +14,7 @@ build_and_test_web_app:
 pages:
   stage: deploy
   script:
-    - cp -r demo_app/build/web public
+    - cp -r demo_app/build/web/* public
   artifacts:
     paths:
       - public

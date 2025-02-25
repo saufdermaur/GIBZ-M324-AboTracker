@@ -28,7 +28,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       await authService.signUpWithEmailPassword(email, password);
-      Navigator.pop(context);
+      if (mounted){
+        Navigator.pop(context);
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)

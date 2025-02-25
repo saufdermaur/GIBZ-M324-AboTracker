@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         page = FavoritesPage();
       case 2:
-        LogOutPage();
+        logOutPage();
         page = Scaffold();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
@@ -118,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-Future LogOutPage() async {
+Future logOutPage() async {
   final authService = AuthService();
 
   await authService.signOut();

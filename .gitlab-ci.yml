@@ -21,7 +21,7 @@ build_and_test_web_app:
 #      - public
 #  only:
 #    - main
-    
+
 deploy_preview:
   stage: deploy
   image: node:16.16.0
@@ -30,7 +30,7 @@ deploy_preview:
   script:
     - npm install --global vercel
     - vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
-    - vercel deploy demo_app/build/web --prebuilt --yes --token=$VERCEL_TOKEN
+    - vercel deploy demo_app/build/web --yes --token=$VERCEL_TOKEN
 
 deploy_production:
   stage: deploy
@@ -40,4 +40,4 @@ deploy_production:
   script:
     - npm install --global vercel
     - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-    - vercel deploy demo_app/build/web --prebuilt --prod --yes --token=$VERCEL_TOKEN
+    - vercel deploy demo_app/build/web --prod --yes --token=$VERCEL_TOKEN

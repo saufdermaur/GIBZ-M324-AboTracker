@@ -29,6 +29,7 @@ code_quality:
   artifacts:
     reports:
       codequality: gl-code-quality-report.json
+    expire_in: 1 week
 
 # Web Build
 build_web_app:

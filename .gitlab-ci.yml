@@ -14,6 +14,7 @@ flutter_analyze:
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
     - flutter pub get
+    - echo "$ENV_FILE" > .env
   script:
     - flutter analyze
 

@@ -16,6 +16,7 @@ pages:
   script:
     - mkdir -p public
     - cp -r demo_app/build/web/* public/
+    - sed -i 's|\$FLUTTER_BASE_HREF|/Squash-Tracker/|g' public/index.html
   artifacts:
     paths:
       - public

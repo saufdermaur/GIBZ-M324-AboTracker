@@ -1,6 +1,6 @@
 build_and_test_web_app:
   stage: build
-  image: cirrusci/flutter:stable
+  image: ghcr.io/cirruslabs/flutter:stable
   before_script:
     - cd demo_app
     - flutter pub get

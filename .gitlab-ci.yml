@@ -51,13 +51,14 @@ build_android_app:
 deploy_preview:
   stage: deploy
   image: node:16.16.0
+  needs: [build_web_app]
   except:
     - main
   dependencies:
     - build_web_app
   script:
     - npm install --global vercel
-    - vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+    - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
     - mkdir -p public
     - cp -r build/web/. public/
     - vercel build --token=$VERCEL_TOKEN

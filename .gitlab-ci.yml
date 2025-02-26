@@ -27,12 +27,10 @@ build_web_app:
     - echo "$DOTENV_FILE" > .env
     - flutter pub get
   script:
-    - flutter build web --base-href "/" --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY --dart-define=SUPABASE_URL=$SUPABASE_URL
-    - mkdir -p .vercel/output/static
-    - cp -r build/web/. .vercel/output/static/
+    - flutter build web --base-href "/"
   artifacts:
     paths:
-      - .vercel/output
+      - build/web
     expire_in: 1 week
 
 # Android Build
@@ -53,7 +51,6 @@ build_android_app:
 deploy_preview:
   stage: deploy
   image: node:16.16.0
-  needs: [build_web_app]
   except:
     - main
   dependencies:
@@ -63,14 +60,13 @@ deploy_preview:
     - vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
     - mkdir -p public
     - cp -r build/web/. public/
-    #- vercel build --token=$VERCEL_TOKEN
+    - vercel build --token=$VERCEL_TOKEN
     - vercel deploy --prebuilt --token=$VERCEL_TOKEN
 
 # Deploy Production for Web
 deploy_production:
   stage: deploy
   image: node:16.16.0
-  needs: [build_web_app]
   only:
     - main
   dependencies:
@@ -82,5 +78,3 @@ deploy_production:
     - cp -r build/web/. public/
     - vercel build --prod --token=$VERCEL_TOKEN
     - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
-
-#trigger commit

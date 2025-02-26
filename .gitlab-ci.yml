@@ -28,6 +28,8 @@ build_web_app:
     - flutter pub get
   script:
     - flutter build web --base-href "/"
+
+
   artifacts:
     paths:
       - build/web
@@ -58,10 +60,10 @@ deploy_preview:
     - build_web_app
   script:
     - npm install --global vercel
-    - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+    - vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
     - mkdir -p public
     - cp -r build/web/. public/
-    - vercel build --prod --token=$VERCEL_TOKEN
+    - vercel build --token=$VERCEL_TOKEN
     - vercel deploy --prebuilt --token=$VERCEL_TOKEN
 
 # Deploy Production for Web

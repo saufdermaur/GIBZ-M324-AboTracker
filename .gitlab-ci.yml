@@ -1,4 +1,4 @@
-# Cache for builds
+#Cache for builds
 cache:
   key: "$CI_COMMIT_REF_SLUG"
   paths:
@@ -6,8 +6,7 @@ cache:
 
 stages:
   - test
-  - build_web
-  - build_android
+  - build
   - deploy
 
 # Flutter Analyze Job
@@ -22,7 +21,7 @@ flutter_analyze:
 
 # Web Build
 build_web_app:
-  stage: build_web
+  stage: build
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
     - echo "$DOTENV_FILE" > .env
@@ -36,7 +35,7 @@ build_web_app:
 
 # Android Build
 build_android_app:
-  stage: build_android
+  stage: build
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
     - echo "$DOTENV_FILE" > .env
@@ -80,4 +79,4 @@ deploy_production:
     - vercel build --prod --token=$VERCEL_TOKEN
     - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
 
-# Trigger Commit
+#trigger commit

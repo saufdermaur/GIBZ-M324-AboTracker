@@ -51,6 +51,7 @@ build_android_app:
 deploy_preview:
   stage: deploy
   image: node:16.16.0
+  needs: [build_web_app]
   except:
     - main
   dependencies:
@@ -67,6 +68,7 @@ deploy_preview:
 deploy_production:
   stage: deploy
   image: node:16.16.0
+  needs: [build_web_app]
   only:
     - main
   dependencies:

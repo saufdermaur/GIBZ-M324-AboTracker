@@ -28,9 +28,11 @@ build_web_app:
     - flutter pub get
   script:
     - flutter build web --base-href "/" --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY --dart-define=SUPABASE_URL=$SUPABASE_URL
+    - mkdir -p .vercel/output/static
+    - cp -r build/web/. .vercel/output/static/
   artifacts:
     paths:
-      - build/web
+      - .vercel/output
     expire_in: 1 week
 
 # Android Build

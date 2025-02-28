@@ -27,7 +27,9 @@ build_web_app:
     - echo "$DOTENV_FILE" > .env
     - flutter pub get
   script:
-    - flutter build web --base-href "/" \ --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY --dart-define=SUPABASE_URL=$SUPABASE_URL \
+    - flutter build web --base-href "/" \
+        --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY" \
+        --dart-define=SUPABASE_URL="$SUPABASE_URL"
   artifacts:
     paths:
       - build/web

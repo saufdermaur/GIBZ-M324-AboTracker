@@ -1,3 +1,4 @@
+#Cache for builds
 cache:
   key: "$CI_COMMIT_REF_SLUG"
   paths:
@@ -13,6 +14,7 @@ flutter_analyze:
   stage: test
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
+    - echo "$DOTENV_FILE" > .env
     - flutter pub get
   script:
     - flutter analyze
@@ -22,9 +24,12 @@ build_web_app:
   stage: build
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
+    - echo "$DOTENV_FILE" > .env
     - flutter pub get
   script:
     - flutter build web --base-href "/"
+
+
   artifacts:
     paths:
       - build/web
@@ -35,6 +40,7 @@ build_android_app:
   stage: build
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
+    - echo "$DOTENV_FILE" > .env
     - flutter pub get
   script:
     - flutter build apk --release
@@ -47,6 +53,7 @@ build_android_app:
 deploy_preview:
   stage: deploy
   image: node:16.16.0
+  needs: [build_web_app]
   except:
     - main
   dependencies:

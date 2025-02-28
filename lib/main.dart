@@ -1,8 +1,19 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:squash_tracker/auth_gate.dart';
+import 'package:squash_tracker/auth_service.dart';
+import 'package:supabase_auth_ui/supabase_auth_ui.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
+
+  await Supabase.initialize(
+    url: dotenv.get('SUPABASE_URL'),
+    anonKey: dotenv.get('SUPABASE_ANON_KEY'),
+  );
+
   runApp(MyApp());
 }
 
@@ -14,12 +25,12 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
-        title: 'Namer App',
+        title: 'Squash-Tracker',
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         ),
-        home: MyHomePage(),
+        home: AuthGate(),
       ),
     );
   }
@@ -60,6 +71,9 @@ class _MyHomePageState extends State<MyHomePage> {
         page = GeneratorPage();
       case 1:
         page = FavoritesPage();
+      case 2:
+        logOutPage();
+        page = Scaffold();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -80,6 +94,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     icon: Icon(Icons.favorite),
                     label: Text('Favorites'),
                   ),
+                  NavigationRailDestination(
+                      icon: Icon(Icons.key), label: Text("Sign out"))
                 ],
                 selectedIndex: selectedIndex,
                 onDestinationSelected: (value) {
@@ -100,6 +116,12 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     });
   }
+}
+
+Future logOutPage() async {
+  final authService = AuthService();
+
+  await authService.signOut();
 }
 
 class GeneratorPage extends StatelessWidget {

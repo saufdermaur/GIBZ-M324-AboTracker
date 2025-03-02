@@ -29,9 +29,7 @@ build_web_app:
   before_script:
     - flutter pub get
   script:
-    - flutter build web --base-href "/" \
-        --dart-define="SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" \
-        --dart-define="SUPABASE_URL=${SUPABASE_URL}"
+    - flutter build web --base-href "/" --dart-define="SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" --dart-define="SUPABASE_URL=${SUPABASE_URL}"
   artifacts:
     paths:
       - build/web
@@ -44,9 +42,7 @@ build_android_app:
   before_script:
     - flutter pub get
   script:
-    - flutter build apk --release \
-        --dart-define="SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" \
-        --dart-define="SUPABASE_URL=${SUPABASE_URL}"
+    - flutter build web --base-href "/" --dart-define="SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" --dart-define="SUPABASE_URL=${SUPABASE_URL}"
   artifacts:
     paths:
       - build/app/outputs/flutter-apk

@@ -15,6 +15,8 @@ flutter_analyze:
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
     - flutter pub get
+    - echo "SUPABASE_URL=${SUPABASE_URL}"
+    - echo "SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}"
   script:
     - flutter analyze
 
@@ -26,8 +28,8 @@ build_web_app:
     - flutter pub get
   script:
     - flutter build web --base-href "/" \
-        --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY" \
-        --dart-define=SUPABASE_URL="$SUPABASE_URL"
+        --dart-define="SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" \
+        --dart-define="SUPABASE_URL=${SUPABASE_URL}"
   artifacts:
     paths:
       - build/web
@@ -40,7 +42,9 @@ build_android_app:
   before_script:
     - flutter pub get
   script:
-    - flutter build apk --release
+    - flutter build apk --release \
+        --dart-define="SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" \
+        --dart-define="SUPABASE_URL=${SUPABASE_URL}"
   artifacts:
     paths:
       - build/app/outputs/flutter-apk

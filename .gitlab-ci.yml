@@ -15,10 +15,6 @@ flutter_analyze:
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
     - flutter pub get
-    - echo "SUPABASE_URL=${SUPABASE_URL}"
-    - echo "SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}"
-    - echo "SUPABASE_URL=$SUPABASE_URL"
-    - echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
   script:
     - flutter analyze
 
@@ -80,5 +76,3 @@ deploy_production:
     - cp -r build/web/. public/
     - vercel build --prod --token=$VERCEL_TOKEN
     - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
-
-    #test

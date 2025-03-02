@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "squash_tracker",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define=SUPABASE_URL=https://ffsfefvytkqipeifqcsj.supabase.co",
+        "--dart-define=SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZmc2ZlZnZ5dGtxaXBlaWZxY3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA1MTMyMzEsImV4cCI6MjA1NjA4OTIzMX0.HeNyvwTAMIPKwSiOc2kZFB5vv6xNUTrykeiEyXGZbtg"
+      ]
+    },
+    {
+      "name": "squash_tracker (profile mode)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "squash_tracker (release mode)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    }
+  ]
+}

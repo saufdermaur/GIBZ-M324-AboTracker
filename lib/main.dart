@@ -4,14 +4,15 @@ import 'package:provider/provider.dart';
 import 'package:squash_tracker/auth_gate.dart';
 import 'package:squash_tracker/auth_service.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
-  await dotenv.load(fileName: ".env");
+
+  const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  const String supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
   await Supabase.initialize(
-    url: dotenv.get('SUPABASE_URL'),
-    anonKey: dotenv.get('SUPABASE_ANON_KEY'),
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
 
   runApp(MyApp());

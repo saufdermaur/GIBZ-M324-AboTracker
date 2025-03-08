@@ -1,12 +1,14 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:squash_tracker/add_group.dart';
 import 'package:squash_tracker/auth_gate.dart';
 import 'package:squash_tracker/auth_service.dart';
+import 'package:squash_tracker/group.dart';
+import 'package:squash_tracker/group_service.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 void main() async {
-
   const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
   const String supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
@@ -73,6 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         page = FavoritesPage();
       case 2:
+        page = GroupPage();
+      case 3:
         logOutPage();
         page = Scaffold();
       default:
@@ -94,6 +98,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   NavigationRailDestination(
                     icon: Icon(Icons.favorite),
                     label: Text('Favorites'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.group),
+                    label: Text('Groups'),
                   ),
                   NavigationRailDestination(
                       icon: Icon(Icons.key), label: Text("Sign out"))
@@ -221,6 +229,72 @@ class FavoritesPage extends StatelessWidget {
             title: Text(pair.asLowerCase),
           ),
       ],
+    );
+  }
+}
+
+class GroupPage extends StatelessWidget {
+  final groupDatabase = GroupService();
+
+  @override
+  Widget build(BuildContext context) {
+    List<Group> groups = [];
+
+    return StreamBuilder(
+      stream: groupDatabase.stream,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        groups = snapshot.data!;
+        return Stack(
+          children: [
+            ListView.builder(
+              padding: const EdgeInsets.all(8),
+              itemCount: groups.length,
+              itemBuilder: (context, index) {
+                var group = groups[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    title: Text(group.name),
+                    trailing: SizedBox(
+                      width: 100,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.edit),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.delete),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            Positioned(
+              bottom: 16,
+              right: 16,
+              child: FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => AddGroup()));
+                },
+                child: Icon(Icons.add),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

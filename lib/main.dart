@@ -29,9 +29,8 @@ class MyApp extends StatelessWidget {
       create: (context) => MyAppState(),
       child: MaterialApp(
         title: 'Squash-Tracker',
-        theme: ThemeData(
+        theme: ThemeData.dark(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         ),
         home: AuthGate(),
       ),
@@ -261,6 +260,13 @@ class GroupPage extends StatelessWidget {
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
                     title: Text(group.name),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Total Cost: \$${group.totalCost}'),
+                        Text('Cost per Booking: \$${group.costPerBooking}'),
+                      ],
+                    ),
                     trailing: SizedBox(
                       width: 100,
                       child: Row(

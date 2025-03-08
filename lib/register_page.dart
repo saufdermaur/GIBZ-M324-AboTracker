@@ -28,7 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       await authService.signUpWithEmailPassword(email, password);
-      if (mounted){
+      if (mounted) {
         Navigator.pop(context);
       }
     } catch (e) {
@@ -48,26 +48,41 @@ class _RegisterPageState extends State<RegisterPage> {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 50),
         children: [
-          TextField(
-            controller: _emailController,
-            decoration: const InputDecoration(labelText: "Email"),
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(), labelText: "Email"),
+            ),
           ),
-          TextField(
-            controller: _passwordController,
-            decoration: const InputDecoration(labelText: "Password"),
-            obscureText: true,
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: TextField(
+              controller: _passwordController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(), labelText: "Password"),
+              obscureText: true,
+            ),
           ),
-          TextField(
-            controller: _confirmPasswordController,
-            decoration: const InputDecoration(labelText: "Confirm Password"),
-            obscureText: true,
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: TextField(
+              controller: _confirmPasswordController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(), labelText: "Confirm Password"),
+              obscureText: true,
+            ),
           ),
           const SizedBox(
             height: 12,
           ),
-          ElevatedButton(
-            onPressed: signUp,
-            child: const Text("Sign Up"),
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: ElevatedButton(
+              onPressed: signUp,
+              child: const Text("Sign Up"),
+            ),
           ),
           const SizedBox(
             height: 12,

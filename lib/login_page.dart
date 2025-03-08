@@ -38,21 +38,32 @@ class _LoginPageState extends State<LoginPage> {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 50),
         children: [
-          TextField(
-            controller: _emailController,
-            decoration: const InputDecoration(labelText: "Email"),
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(), labelText: "Email"),
+            ),
           ),
-          TextField(
-            controller: _passwordController,
-            decoration: const InputDecoration(labelText: "Password"),
-            obscureText: true,
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: TextField(
+              controller: _passwordController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(), labelText: "Password"),
+              obscureText: true,
+            ),
           ),
           const SizedBox(
             height: 12,
           ),
-          ElevatedButton(
-            onPressed: login,
-            child: const Text("Login"),
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: ElevatedButton(
+              onPressed: login,
+              child: const Text("Login"),
+            ),
           ),
           const SizedBox(
             height: 12,

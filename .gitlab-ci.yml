@@ -14,7 +14,6 @@ flutter_analyze:
   stage: test
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
-    - echo "$DOTENV_FILE" > .env
     - flutter pub get
   script:
     - flutter analyze
@@ -24,12 +23,9 @@ build_web_app:
   stage: build
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
-    - echo "$DOTENV_FILE" > .env
     - flutter pub get
   script:
-    - flutter build web --base-href "/"
-
-
+    - flutter build web --base-href "/" --dart-define="SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" --dart-define="SUPABASE_URL=${SUPABASE_URL}"
   artifacts:
     paths:
       - build/web
@@ -40,10 +36,9 @@ build_android_app:
   stage: build
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
-    - echo "$DOTENV_FILE" > .env
     - flutter pub get
   script:
-    - flutter build apk --release
+    - flutter build web --base-href "/" --dart-define="SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" --dart-define="SUPABASE_URL=${SUPABASE_URL}"
   artifacts:
     paths:
       - build/app/outputs/flutter-apk

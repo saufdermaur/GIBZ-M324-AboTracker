@@ -1,11 +1,12 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:squash_tracker/add_group.dart';
-import 'package:squash_tracker/auth_gate.dart';
-import 'package:squash_tracker/auth_service.dart';
-import 'package:squash_tracker/group.dart';
-import 'package:squash_tracker/group_service.dart';
+import 'package:squash_tracker/group/add_group.dart';
+import 'package:squash_tracker/auth/auth_gate.dart';
+import 'package:squash_tracker/auth/auth_service.dart';
+import 'package:squash_tracker/group/group.dart';
+import 'package:squash_tracker/group/group_service.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 void main() async {
@@ -232,8 +233,290 @@ class FavoritesPage extends StatelessWidget {
   }
 }
 
-class GroupPage extends StatelessWidget {
+class GroupPage extends StatefulWidget {
+  const GroupPage({super.key});
+
+  @override
+  State<GroupPage> createState() => _GroupPageState();
+}
+
+class _GroupPageState extends State<GroupPage> {
   final groupDatabase = GroupService();
+
+  final _nameController = TextEditingController();
+  final _userController = TextEditingController();
+  final _costPerBookingController = TextEditingController();
+  final _totalCostController = TextEditingController();
+
+  void createGroup() async {
+    final newGroup = Group(
+        totalCost: int.parse(_totalCostController.text),
+        costPerBooking: int.parse(_costPerBookingController.text),
+        name: _nameController.text);
+
+    try {
+      await groupDatabase.createGroup(newGroup);
+      if (mounted) {}
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Error: $e")));
+      }
+    } finally {
+      if (mounted) {
+        Navigator.pop(context);
+
+        _nameController.clear();
+        _userController.clear();
+        _costPerBookingController.clear();
+        _totalCostController.clear();
+      }
+    }
+  }
+
+  void addNewGroup() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text("New Group"),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: TextField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(), labelText: "Name"),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: TextField(
+                        controller: _userController,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: "Benutzer"),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: TextField(
+                        controller: _totalCostController,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: "Abopreis"),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: TextField(
+                        controller: _costPerBookingController,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: "Preis pro Mal"),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+
+                      _nameController.clear();
+                      _userController.clear();
+                      _costPerBookingController.clear();
+                      _totalCostController.clear();
+                    },
+                    child: const Text("Abbrechen"),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: createGroup,
+                    child: const Text("Erstellen"),
+                  ),
+                ),
+              ],
+            ));
+  }
+
+  void changeGroup(Group oldGroup) async {
+    final totalCost = int.parse(_totalCostController.text);
+    final costPerBooking = int.parse(_costPerBookingController.text);
+
+    try {
+      await groupDatabase.updateGroup(
+          oldGroup, _nameController.text, totalCost, costPerBooking);
+      if (mounted) {}
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Error: $e")));
+      }
+    } finally {
+      if (mounted) {
+        Navigator.pop(context);
+
+        _nameController.clear();
+        _userController.clear();
+        _costPerBookingController.clear();
+        _totalCostController.clear();
+      }
+    }
+  }
+
+  void updateGroup(Group group) {
+    _nameController.text = group.name;
+    //_userController.text = group.user;
+    _costPerBookingController.text = group.costPerBooking.toString();
+    _totalCostController.text = group.totalCost.toString();
+
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text("Edit Group"),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: TextField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(), labelText: "Name"),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: TextField(
+                        controller: _userController,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: "Benutzer"),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: TextField(
+                        controller: _totalCostController,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: "Abopreis"),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: TextField(
+                        controller: _costPerBookingController,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: "Preis pro Mal"),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+
+                      _nameController.clear();
+                      _userController.clear();
+                      _costPerBookingController.clear();
+                      _totalCostController.clear();
+                    },
+                    child: const Text("Abbrechen"),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: () => changeGroup(group),
+                    child: const Text("Ändern"),
+                  ),
+                ),
+              ],
+            ));
+  }
+
+  void deleteGroupFunction(Group group) async {
+    try {
+      await groupDatabase.deleteGroup(group);
+      if (mounted) {}
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Error: $e")));
+      }
+    } finally {
+      if (mounted) {
+        Navigator.pop(context);
+
+        _nameController.clear();
+        _userController.clear();
+        _costPerBookingController.clear();
+        _totalCostController.clear();
+      }
+    }
+  }
+
+  void deleteGroup(Group group) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text("Delete Group"),
+              actions: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+
+                      _nameController.clear();
+                      _userController.clear();
+                      _costPerBookingController.clear();
+                      _totalCostController.clear();
+                    },
+                    child: const Text("Abbrechen"),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: () => deleteGroupFunction(group),
+                    child: const Text("Löschen"),
+                  ),
+                ),
+              ],
+            ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -273,11 +556,11 @@ class GroupPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () => updateGroup(group),
                             icon: Icon(Icons.edit),
                           ),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () => deleteGroup(group),
                             icon: Icon(Icons.delete),
                           ),
                         ],
@@ -291,10 +574,7 @@ class GroupPage extends StatelessWidget {
               bottom: 16,
               right: 16,
               child: FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AddGroup()));
-                },
+                onPressed: addNewGroup,
                 child: Icon(Icons.add),
               ),
             ),

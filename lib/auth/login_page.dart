@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:squash_tracker/auth_service.dart';
-import 'package:squash_tracker/register_page.dart';
+import 'package:squash_tracker/auth/auth_service.dart';
+import 'package:squash_tracker/auth/register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

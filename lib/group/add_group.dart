@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:squash_tracker/group.dart';
-import 'package:squash_tracker/group_service.dart';
+import 'package:squash_tracker/group/group.dart';
+import 'package:squash_tracker/group/group_service.dart';
 import 'package:squash_tracker/main.dart';
 
 class AddGroup extends StatefulWidget {

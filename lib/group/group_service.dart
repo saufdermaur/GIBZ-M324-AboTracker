@@ -1,4 +1,4 @@
-import 'package:squash_tracker/group.dart';
+import 'package:squash_tracker/group/group.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class GroupService {
@@ -15,8 +15,9 @@ class GroupService {
   ]).map((data) => data.map((groupMap) => Group.fromMap(groupMap)).toList());
 
   // Update
-  Future updateGroup(Group oldGroup, int totalCost, int costPerBooking) async {
+  Future updateGroup(Group oldGroup,String name, int totalCost, int costPerBooking) async {
     await _supabaseClient.update({
+      "name": name,
       "total_cost": totalCost,
       "cost_per_booking": costPerBooking
     }).eq("id", oldGroup.id!);

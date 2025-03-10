@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:squash_tracker/login_page.dart';
+import 'package:squash_tracker/auth/login_page.dart';
 import 'package:squash_tracker/main.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 

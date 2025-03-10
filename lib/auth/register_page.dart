@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:squash_tracker/auth_service.dart';
+import 'package:squash_tracker/auth/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

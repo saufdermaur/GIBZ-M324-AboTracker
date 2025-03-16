@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:squash_tracker/auth/auth_gate.dart';
 import 'package:squash_tracker/auth/auth_service.dart';
+import 'package:squash_tracker/user/user_page.dart';
 import 'package:squash_tracker/group/group_page.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
@@ -74,6 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
       case 2:
         page = GroupPage();
       case 3:
+        page = UserPage();
+      case 4:
         logOutPage();
         page = Scaffold();
       default:
@@ -100,6 +103,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     icon: Icon(Icons.group),
                     label: Text('Groups'),
                   ),
+                  NavigationRailDestination(
+                      icon: Icon(Icons.person), label: Text('Users')),
                   NavigationRailDestination(
                       icon: Icon(Icons.key), label: Text("Sign out"))
                 ],

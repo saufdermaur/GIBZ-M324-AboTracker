@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:squash_tracker/group/group.dart';
+import 'package:squash_tracker/group/group_class.dart';
 import 'package:squash_tracker/group/group_service.dart';
 
 class GroupPage extends StatefulWidget {
@@ -28,7 +28,7 @@ class _GroupPageState extends State<GroupPage> {
   }
 
   void createGroup() async {
-    final newGroup = Group(
+    final newGroup = GroupClass(
         totalCost: int.parse(_totalCostController.text),
         costPerBooking: int.parse(_costPerBookingController.text),
         name: _nameController.text);
@@ -122,7 +122,7 @@ class _GroupPageState extends State<GroupPage> {
             ));
   }
 
-  void changeGroup(Group oldGroup) async {
+  void changeGroup(GroupClass oldGroup) async {
     final totalCost = int.parse(_totalCostController.text);
     final costPerBooking = int.parse(_costPerBookingController.text);
 
@@ -137,17 +137,12 @@ class _GroupPageState extends State<GroupPage> {
       }
     } finally {
       if (mounted) {
-        Navigator.pop(context);
-
-        _nameController.clear();
-        _userController.clear();
-        _costPerBookingController.clear();
-        _totalCostController.clear();
+        cleanFields();
       }
     }
   }
 
-  void updateGroup(Group group) {
+  void updateGroup(GroupClass group) {
     _nameController.text = group.name;
     //_userController.text = group.user;
     _costPerBookingController.text = group.costPerBooking.toString();
@@ -226,7 +221,7 @@ class _GroupPageState extends State<GroupPage> {
             ));
   }
 
-  void deleteGroupFunction(Group group) async {
+  void deleteGroupFunction(GroupClass group) async {
     try {
       await groupDatabase.deleteGroup(group);
       if (mounted) {}
@@ -237,17 +232,12 @@ class _GroupPageState extends State<GroupPage> {
       }
     } finally {
       if (mounted) {
-        Navigator.pop(context);
-
-        _nameController.clear();
-        _userController.clear();
-        _costPerBookingController.clear();
-        _totalCostController.clear();
+        cleanFields();
       }
     }
   }
 
-  void deleteGroup(Group group) {
+  void deleteGroup(GroupClass group) {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -273,7 +263,7 @@ class _GroupPageState extends State<GroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Group> groups = [];
+    List<GroupClass> groups = [];
 
     return StreamBuilder(
       stream: groupDatabase.stream,

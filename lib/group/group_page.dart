@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:squash_tracker/group/group_class.dart';
 import 'package:squash_tracker/group/group_service.dart';
+import 'package:choice/choice.dart';
 
 class GroupPage extends StatefulWidget {
   const GroupPage({super.key});
@@ -48,6 +49,27 @@ class _GroupPageState extends State<GroupPage> {
     }
   }
 
+  List<String> choices = [
+    'News',
+    'Entertainment',
+    'Politics',
+    'Automotive',
+    'Sports',
+    'Education',
+    'Fashion',
+    'Travel',
+    'Food',
+    'Tech',
+    'Science',
+    'Arts'
+  ];
+
+  List<String> multipleSelected = [];
+
+  void setMultipleSelected(List<String> value) {
+    setState(() => multipleSelected = value);
+  }
+
   void addNewGroup() {
     showDialog(
         context: context,
@@ -57,6 +79,30 @@ class _GroupPageState extends State<GroupPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    Card(
+                      margin: const EdgeInsets.symmetric(vertical: 20),
+                      child: Choice<String>.prompt(
+                        title: 'Users',
+                        multiple: true,
+                        value: multipleSelected,
+                        onChanged: setMultipleSelected,
+                        itemCount: choices.length,
+                        itemBuilder: (state, i) {
+                          return CheckboxListTile(
+                            value: state.selected(choices[i]),
+                            onChanged: state.onSelected(choices[i]),
+                            title: ChoiceText(
+                              choices[i],
+                              highlight: state.search?.value,
+                            ),
+                          );
+                        },
+                        modalHeaderBuilder: ChoiceModal.createHeader(
+                          automaticallyImplyLeading: false,
+                        ),
+                        promptDelegate: ChoicePrompt.delegateBottomSheet(),
+                      ),
+                    ),
                     Container(
                       padding: const EdgeInsets.all(10),
                       child: TextField(

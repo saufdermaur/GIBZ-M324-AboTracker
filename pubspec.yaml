@@ -17,6 +17,7 @@ dependencies:
   supabase_auth_ui: ^0.5.4
   flutter_dotenv: ^5.2.1
   supabase_flutter: ^2.8.4
+  choice: ^2.3.2
 
 dev_dependencies:
   flutter_test:

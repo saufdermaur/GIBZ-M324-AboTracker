@@ -2,6 +2,7 @@ import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 class AuthService {
   final SupabaseClient _supabaseClient = Supabase.instance.client;
+  final _supabaseClientUser = Supabase.instance.client.from("users");
 
   // Sign in
   Future<AuthResponse> signInWithEmailPassword(
@@ -12,8 +13,10 @@ class AuthService {
 
   // Sign up
   Future<AuthResponse> signUpWithEmailPassword(
-      String email, String password) async {
-    return await _supabaseClient.auth.signUp(email: email, password: password);
+      String nickname, String email, String password) async {
+    await _supabaseClient.auth.signUp(email: email, password: password);
+    return await _supabaseClientUser
+        .update({"nickname": nickname}).eq("email", email);
   }
 
   // Sign out

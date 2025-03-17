@@ -40,7 +40,7 @@ class _UserPageState extends State<UserPage> {
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
-                    title: Text("${user.firstName} ${user.lastName}"),
+                    title: Text(user.nickname),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

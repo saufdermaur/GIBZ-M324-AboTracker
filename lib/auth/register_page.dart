@@ -11,11 +11,13 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final authService = AuthService();
 
+  final _nicknameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   void signUp() async {
+    final nickname = _nicknameController.text;
     final email = _emailController.text;
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
@@ -27,7 +29,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     try {
-      await authService.signUpWithEmailPassword(email, password);
+      await authService.signUpWithEmailPassword(nickname, email, password);
       if (mounted) {
         Navigator.pop(context);
       }
@@ -48,6 +50,14 @@ class _RegisterPageState extends State<RegisterPage> {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 50),
         children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: TextField(
+              controller: _nicknameController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(), labelText: "Nickname"),
+            ),
+          ),
           Container(
             padding: const EdgeInsets.all(10),
             child: TextField(

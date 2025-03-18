@@ -9,22 +9,21 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final authService = AuthService();
+  final AuthService authService = AuthService();
 
-  final _nicknameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final TextEditingController _nicknameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   void signUp() async {
-    final nickname = _nicknameController.text;
-    final email = _emailController.text;
-    final password = _passwordController.text;
-    final confirmPassword = _confirmPasswordController.text;
+    final String nickname = _nicknameController.text;
+    final String email = _emailController.text;
+    final String password = _passwordController.text;
+    final String confirmPassword = _confirmPasswordController.text;
 
     if (password != confirmPassword) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Passwords don't match")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Passwords don't match")));
       return;
     }
 
@@ -35,8 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
       }
     }
   }
@@ -49,29 +47,26 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 50),
-        children: [
+        children: <Widget>[
           Container(
             padding: const EdgeInsets.all(10),
             child: TextField(
               controller: _nicknameController,
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(), labelText: "Nickname"),
+              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Nickname"),
             ),
           ),
           Container(
             padding: const EdgeInsets.all(10),
             child: TextField(
               controller: _emailController,
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(), labelText: "Email"),
+              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Email"),
             ),
           ),
           Container(
             padding: const EdgeInsets.all(10),
             child: TextField(
               controller: _passwordController,
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(), labelText: "Password"),
+              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Password"),
               obscureText: true,
             ),
           ),
@@ -79,8 +74,7 @@ class _RegisterPageState extends State<RegisterPage> {
             padding: const EdgeInsets.all(10),
             child: TextField(
               controller: _confirmPasswordController,
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(), labelText: "Confirm Password"),
+              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Confirm Password"),
               obscureText: true,
             ),
           ),

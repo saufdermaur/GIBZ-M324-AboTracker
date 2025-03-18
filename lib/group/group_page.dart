@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:squash_tracker/group/group_class.dart';
 import 'package:squash_tracker/group/group_service.dart';
-import 'package:choice/choice.dart';
+import 'package:squash_tracker/user/user_class.dart';
+import 'package:squash_tracker/user/user_service.dart';
+import 'package:squash_tracker/user_group/user_group_service.dart';
 
 class GroupPage extends StatefulWidget {
   const GroupPage({super.key});
@@ -12,35 +14,35 @@ class GroupPage extends StatefulWidget {
 }
 
 class _GroupPageState extends State<GroupPage> {
-  final groupDatabase = GroupService();
+  final GroupService _groupDatabase = GroupService();
+  final UserService _userDatabase = UserService();
+  final UserGroupService _userGroupDatabase = UserGroupService();
 
-  final _nameController = TextEditingController();
-  final _userController = TextEditingController();
-  final _costPerBookingController = TextEditingController();
-  final _totalCostController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _costPerBookingController = TextEditingController();
+  final TextEditingController _totalCostController = TextEditingController();
+
+  final List<UserClass> _selectedUsers = <UserClass>[];
+  List<UserClass> users = <UserClass>[];
 
   void cleanFields() {
     Navigator.pop(context);
 
     _nameController.clear();
-    _userController.clear();
     _costPerBookingController.clear();
     _totalCostController.clear();
+    _selectedUsers.clear();
   }
 
   void createGroup() async {
-    final newGroup = GroupClass(
-        totalCost: int.parse(_totalCostController.text),
-        costPerBooking: int.parse(_costPerBookingController.text),
-        name: _nameController.text);
-
+    final GroupClass newGroup = GroupClass(
+        totalCost: int.parse(_totalCostController.text), costPerBooking: int.parse(_costPerBookingController.text), name: _nameController.text);
     try {
-      await groupDatabase.createGroup(newGroup);
-      if (mounted) {}
+      GroupClass group = await _groupDatabase.createGroup(newGroup);
+      await _userGroupDatabase.createUserGroup(group.id, _selectedUsers);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
       }
     } finally {
       if (mounted) {
@@ -49,107 +51,88 @@ class _GroupPageState extends State<GroupPage> {
     }
   }
 
-  List<String> choices = [
-    'News',
-    'Entertainment',
-    'Politics',
-    'Automotive',
-    'Sports',
-    'Education',
-    'Fashion',
-    'Travel',
-    'Food',
-    'Tech',
-    'Science',
-    'Arts'
-  ];
-
-  List<String> multipleSelected = [];
-
-  void setMultipleSelected(List<String> value) {
-    setState(() => multipleSelected = value);
+  Future<void> getUsers() async {
+    try {
+      final List<UserClass> fetchedUsers = await _userDatabase.getUsers();
+      if (mounted) {
+        setState(() {
+          users = fetchedUsers;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+      }
+    }
   }
 
-  void addNewGroup() {
+  void addNewGroup() async {
+    await getUsers();
+    if (!mounted) {
+      return;
+    }
+
     showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, void Function(void Function()) setDialogState) {
+            return AlertDialog(
               title: const Text("New Group"),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Card(
-                      margin: const EdgeInsets.symmetric(vertical: 20),
-                      child: Choice<String>.prompt(
-                        title: 'Users',
-                        multiple: true,
-                        value: multipleSelected,
-                        onChanged: setMultipleSelected,
-                        itemCount: choices.length,
-                        itemBuilder: (state, i) {
-                          return CheckboxListTile(
-                            value: state.selected(choices[i]),
-                            onChanged: state.onSelected(choices[i]),
-                            title: ChoiceText(
-                              choices[i],
-                              highlight: state.search?.value,
-                            ),
-                          );
-                        },
-                        modalHeaderBuilder: ChoiceModal.createHeader(
-                          automaticallyImplyLeading: false,
-                        ),
-                        promptDelegate: ChoicePrompt.delegateBottomSheet(),
-                      ),
-                    ),
+                  children: <Widget>[
                     Container(
                       padding: const EdgeInsets.all(10),
                       child: TextField(
                         controller: _nameController,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(), labelText: "Name"),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      child: TextField(
-                        controller: _userController,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: "Benutzer"),
+                        decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Name"),
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.all(10),
                       child: TextField(
                         controller: _totalCostController,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: "Abopreis"),
+                        decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Abopreis"),
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.all(10),
                       child: TextField(
                         controller: _costPerBookingController,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: "Preis pro Mal"),
+                        decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Preis pro Mal"),
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                       ),
                     ),
+                    Wrap(
+                      spacing: 5.0,
+                      runSpacing: 5.0,
+                      children: users.map((UserClass user) {
+                        return ChoiceChip(
+                          label: Text(user.nickname),
+                          selected: _selectedUsers.contains(user),
+                          onSelected: (bool selected) {
+                            setDialogState(() {
+                              if (selected) {
+                                if (!_selectedUsers.any((UserClass u) => u.id == user.id)) {
+                                  _selectedUsers.add(user);
+                                }
+                              } else {
+                                _selectedUsers.removeWhere((UserClass u) => u.id == user.id);
+                              }
+                            });
+                          },
+                        );
+                      }).toList(),
+                    )
                   ],
                 ),
               ),
-              actions: [
+              actions: <Widget>[
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: ElevatedButton(
@@ -165,21 +148,23 @@ class _GroupPageState extends State<GroupPage> {
                   ),
                 ),
               ],
-            ));
+            );
+          },
+        );
+      },
+    );
   }
 
   void changeGroup(GroupClass oldGroup) async {
-    final totalCost = int.parse(_totalCostController.text);
-    final costPerBooking = int.parse(_costPerBookingController.text);
+    final int totalCost = int.parse(_totalCostController.text);
+    final int costPerBooking = int.parse(_costPerBookingController.text);
 
     try {
-      await groupDatabase.updateGroup(
-          oldGroup, _nameController.text, totalCost, costPerBooking);
+      await _groupDatabase.updateGroup(oldGroup, _nameController.text, totalCost, costPerBooking);
       if (mounted) {}
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
       }
     } finally {
       if (mounted) {
@@ -190,65 +175,46 @@ class _GroupPageState extends State<GroupPage> {
 
   void updateGroup(GroupClass group) {
     _nameController.text = group.name;
-    //_userController.text = group.user;
     _costPerBookingController.text = group.costPerBooking.toString();
     _totalCostController.text = group.totalCost.toString();
 
     showDialog(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (BuildContext context) => AlertDialog(
               title: const Text("Edit Group"),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
+                  children: <Widget>[
                     Container(
                       padding: const EdgeInsets.all(10),
                       child: TextField(
                         controller: _nameController,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(), labelText: "Name"),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      child: TextField(
-                        controller: _userController,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: "Benutzer"),
+                        decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Name"),
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.all(10),
                       child: TextField(
                         controller: _totalCostController,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: "Abopreis"),
+                        decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Abopreis"),
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.all(10),
                       child: TextField(
                         controller: _costPerBookingController,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: "Preis pro Mal"),
+                        decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Preis pro Mal"),
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                       ),
                     ),
                   ],
                 ),
               ),
-              actions: [
+              actions: <Widget>[
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: ElevatedButton(
@@ -269,12 +235,11 @@ class _GroupPageState extends State<GroupPage> {
 
   void deleteGroupFunction(GroupClass group) async {
     try {
-      await groupDatabase.deleteGroup(group);
+      await _groupDatabase.deleteGroup(group);
       if (mounted) {}
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
       }
     } finally {
       if (mounted) {
@@ -286,9 +251,9 @@ class _GroupPageState extends State<GroupPage> {
   void deleteGroup(GroupClass group) {
     showDialog(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (BuildContext context) => AlertDialog(
               title: const Text("Delete Group"),
-              actions: [
+              actions: <Widget>[
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: ElevatedButton(
@@ -309,11 +274,11 @@ class _GroupPageState extends State<GroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<GroupClass> groups = [];
+    List<GroupClass> groups = <GroupClass>[];
 
-    return StreamBuilder(
-      stream: groupDatabase.stream,
-      builder: (context, snapshot) {
+    return StreamBuilder<List<GroupClass>>(
+      stream: _groupDatabase.stream,
+      builder: (BuildContext context, AsyncSnapshot<List<GroupClass>> snapshot) {
         if (!snapshot.hasData) {
           return const Center(
             child: CircularProgressIndicator(),
@@ -322,19 +287,19 @@ class _GroupPageState extends State<GroupPage> {
 
         groups = snapshot.data!;
         return Stack(
-          children: [
+          children: <Widget>[
             ListView.builder(
               padding: const EdgeInsets.all(8),
               itemCount: groups.length,
-              itemBuilder: (context, index) {
-                var group = groups[index];
+              itemBuilder: (BuildContext context, int index) {
+                GroupClass group = groups[index];
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
                     title: Text(group.name),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Text('Total Cost: \$${group.totalCost}'),
                         Text('Cost per Booking: \$${group.costPerBooking}'),
                       ],
@@ -343,7 +308,7 @@ class _GroupPageState extends State<GroupPage> {
                       width: 100,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
+                        children: <Widget>[
                           IconButton(
                             onPressed: () => updateGroup(group),
                             icon: Icon(Icons.edit),

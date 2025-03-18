@@ -24,8 +24,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
+    return ChangeNotifierProvider<MyAppState>(
+      create: (BuildContext context) => MyAppState(),
       child: MaterialApp(
         title: 'Squash-Tracker',
         theme: ThemeData.dark(
@@ -38,8 +38,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
-  var favorites = <WordPair>[];
+  WordPair current = WordPair.random();
+  List<WordPair> favorites = <WordPair>[];
 
   void getNext() {
     current = WordPair.random();
@@ -62,7 +62,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var selectedIndex = 0;
+  int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -83,14 +83,14 @@ class _MyHomePageState extends State<MyHomePage> {
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
-    return LayoutBuilder(builder: (context, constraints) {
+    return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
       return Scaffold(
         body: Row(
-          children: [
+          children: <Widget>[
             SafeArea(
               child: NavigationRail(
                 extended: constraints.maxWidth >= 600,
-                destinations: [
+                destinations: <NavigationRailDestination>[
                   NavigationRailDestination(
                     icon: Icon(Icons.home),
                     label: Text('Home'),
@@ -103,13 +103,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     icon: Icon(Icons.group),
                     label: Text('Groups'),
                   ),
-                  NavigationRailDestination(
-                      icon: Icon(Icons.person), label: Text('Users')),
-                  NavigationRailDestination(
-                      icon: Icon(Icons.key), label: Text("Sign out"))
+                  NavigationRailDestination(icon: Icon(Icons.person), label: Text('Users')),
+                  NavigationRailDestination(icon: Icon(Icons.key), label: Text("Sign out"))
                 ],
                 selectedIndex: selectedIndex,
-                onDestinationSelected: (value) {
+                onDestinationSelected: (int value) {
                   setState(() {
                     selectedIndex = value;
                   });
@@ -129,8 +127,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-Future logOutPage() async {
-  final authService = AuthService();
+Future<void> logOutPage() async {
+  final AuthService authService = AuthService();
 
   await authService.signOut();
 }
@@ -138,8 +136,8 @@ Future logOutPage() async {
 class GeneratorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    var pair = appState.current;
+    MyAppState appState = context.watch<MyAppState>();
+    WordPair pair = appState.current;
 
     IconData icon;
     if (appState.favorites.contains(pair)) {
@@ -151,12 +149,12 @@ class GeneratorPage extends StatelessWidget {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: <Widget>[
           BigCard(pair: pair),
           SizedBox(height: 10),
           Row(
             mainAxisSize: MainAxisSize.min,
-            children: [
+            children: <Widget>[
               ElevatedButton.icon(
                 onPressed: () {
                   appState.toggleFavorite();
@@ -189,8 +187,8 @@ class BigCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final style = theme.textTheme.displayMedium!.copyWith(
+    final ThemeData theme = Theme.of(context);
+    final TextStyle style = theme.textTheme.displayMedium!.copyWith(
       color: theme.colorScheme.onPrimary,
     );
 
@@ -211,7 +209,7 @@ class BigCard extends StatelessWidget {
 class FavoritesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
+    MyAppState appState = context.watch<MyAppState>();
 
     if (appState.favorites.isEmpty) {
       return Center(
@@ -220,12 +218,12 @@ class FavoritesPage extends StatelessWidget {
     }
 
     return ListView(
-      children: [
+      children: <Widget>[
         Padding(
           padding: const EdgeInsets.all(20),
           child: Text('You have ' '${appState.favorites.length} favorites:'),
         ),
-        for (var pair in appState.favorites)
+        for (WordPair pair in appState.favorites)
           ListTile(
             leading: Icon(Icons.favorite),
             title: Text(pair.asLowerCase),

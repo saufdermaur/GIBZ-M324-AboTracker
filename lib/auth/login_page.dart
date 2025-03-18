@@ -10,21 +10,20 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final authService = AuthService();
+  final AuthService authService = AuthService();
 
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   void login() async {
-    final email = _emailController.text;
-    final password = _passwordController.text;
+    final String email = _emailController.text;
+    final String password = _passwordController.text;
 
     try {
       await authService.signInWithEmailPassword(email, password);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
       }
     }
   }
@@ -37,21 +36,19 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 50),
-        children: [
+        children: <Widget>[
           Container(
             padding: const EdgeInsets.all(10),
             child: TextField(
               controller: _emailController,
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(), labelText: "Email"),
+              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Email"),
             ),
           ),
           Container(
             padding: const EdgeInsets.all(10),
             child: TextField(
               controller: _passwordController,
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(), labelText: "Password"),
+              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Password"),
               obscureText: true,
             ),
           ),
@@ -69,8 +66,7 @@ class _LoginPageState extends State<LoginPage> {
             height: 12,
           ),
           GestureDetector(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const RegisterPage())),
+            onTap: () => Navigator.push(context, MaterialPageRoute<RegisterPage>(builder: (BuildContext context) => const RegisterPage())),
             child: Center(
               child: const Text("Don't have an account? Sign up"),
             ),

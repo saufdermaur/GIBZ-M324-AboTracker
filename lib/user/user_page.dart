@@ -10,7 +10,7 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  final userDatabase = UserService();
+  final UserService userDatabase = UserService();
 
   void cleanFields() {
     Navigator.pop(context);
@@ -18,11 +18,11 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<UserClass> users = [];
+    List<UserClass> users = <UserClass>[];
 
-    return StreamBuilder(
+    return StreamBuilder<List<UserClass>>(
       stream: userDatabase.stream,
-      builder: (context, snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<UserClass>> snapshot) {
         if (!snapshot.hasData) {
           return const Center(
             child: CircularProgressIndicator(),
@@ -31,19 +31,19 @@ class _UserPageState extends State<UserPage> {
 
         users = snapshot.data!;
         return Stack(
-          children: [
+          children: <Widget>[
             ListView.builder(
               padding: const EdgeInsets.all(8),
               itemCount: users.length,
-              itemBuilder: (context, index) {
-                var user = users[index];
+              itemBuilder: (BuildContext context, int index) {
+                UserClass user = users[index];
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
                     title: Text(user.nickname),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Text('Email: ${user.email}'),
                       ],
                     ),

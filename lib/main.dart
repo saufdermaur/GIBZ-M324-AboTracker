@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:squash_tracker/auth/auth_gate.dart';
 import 'package:squash_tracker/auth/auth_service.dart';
+import 'package:squash_tracker/home/home_page.dart';
 import 'package:squash_tracker/user/user_page.dart';
 import 'package:squash_tracker/group/group_page.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
@@ -101,18 +102,4 @@ Future<void> logOutPage() async {
   final AuthService authService = AuthService();
 
   await authService.signOut();
-}
-
-class HomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text("Du schuldest: 3.-"),
-        ],
-      ),
-    );
-  }
 }

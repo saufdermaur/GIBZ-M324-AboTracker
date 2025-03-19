@@ -12,6 +12,7 @@ class UserGroupService {
     }
   }
 
+  // Read simple
   Future<List<UserGroupClass>> getUserGroups() async {
     final PostgrestList response = await _supabaseClient.select();
     return (response as List<dynamic>).map((dynamic map) => UserGroupClass.fromMap(map as Map<String, dynamic>)).toList();

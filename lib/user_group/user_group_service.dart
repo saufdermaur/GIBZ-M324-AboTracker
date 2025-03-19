@@ -18,6 +18,12 @@ class UserGroupService {
     return (response as List<dynamic>).map((dynamic map) => UserGroupClass.fromMap(map as Map<String, dynamic>)).toList();
   }
 
+  // Read simple id grouo
+  Future<List<UserGroupClass>> getUserGroupGroupId(String groupId) async {
+    final PostgrestList response = await _supabaseClient.select().eq("group_id", groupId);
+    return (response as List<dynamic>).map((dynamic map) => UserGroupClass.fromMap(map as Map<String, dynamic>)).toList();
+  }
+
   // Update
   Future<void> updateUserGroup(UserGroupClass oldUserGroup, String userId, String groupId) async {
     await _supabaseClient.update(<String, String>{"user_id": userId, "group_id": groupId}).eq("id", oldUserGroup.id);

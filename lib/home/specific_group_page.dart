@@ -6,15 +6,21 @@ import 'package:squash_tracker/user/user_class.dart';
 import 'package:squash_tracker/user/user_service.dart';
 import 'package:squash_tracker/user_group/user_group_class.dart';
 import 'package:squash_tracker/user_group/user_group_service.dart';
+import 'package:squash_tracker/user_group_booking/user_group_booking_class.dart';
+import 'package:squash_tracker/user_group_booking/user_group_booking_service.dart';
 
 class SpecificGroupPage extends StatefulWidget {
-  const SpecificGroupPage({super.key});
+  final UserGroupClass userGroupClass;
+
+  SpecificGroupPage({super.key, required this.userGroupClass});
 
   @override
   State<SpecificGroupPage> createState() => _SpecificGroupPageState();
 }
 
 class _SpecificGroupPageState extends State<SpecificGroupPage> {
+  late final UserGroupClass userGroupClass;
+
   final UserService userDatabase = UserService();
 
   final TextEditingController _nameController = TextEditingController();
@@ -25,9 +31,17 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
   final GroupService _groupDatabase = GroupService();
   final UserService _userDatabase = UserService();
   final UserGroupService _userGroupDatabase = UserGroupService();
+  final UserGroupBookingService _userGroupBookingDatabase = UserGroupBookingService();
 
   List<UserClass> users = <UserClass>[];
   List<UserGroupClass> userGroups = <UserGroupClass>[];
+
+  @override
+  void initState() {
+    super.initState();
+    userGroupClass = widget.userGroupClass;
+    getUsers();
+  }
 
   void cleanFields() {
     Navigator.pop(context);
@@ -43,7 +57,9 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
   Future<void> getUsers() async {
     try {
       final List<UserClass> fetchedUsers = await _userDatabase.getUsers();
-      final List<UserGroupClass> fetchedUserGroups = await _userGroupDatabase.getUserGroups();
+      final List<UserGroupClass> fetchedUserGroups = await _userGroupDatabase.getUserGroupGroupId(userGroupClass.groupId);
+      //final List<UserGroupBooking> fetchedUserGroupsBookings = await _userGroupBookingDatabase.getUserGroupBooking(fetchedUserGroups);
+
       if (mounted) {
         setState(() {
           users = fetchedUsers;
@@ -187,18 +203,15 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                   padding: const EdgeInsets.all(8),
                   itemCount: groups.length,
                   itemBuilder: (BuildContext context, int index) {
-                    GroupClass group = groups[index];
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 8),
                       child: ListTile(
-                        title: Text(group.name),
+                        title: Text("Buchung"),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text('Total Cost: \$${group.totalCost}'),
-                            Text('Cost per Booking: \$${group.costPerBooking}'),
                             Text(
-                                "Users: ${userGroups.where((UserGroupClass userGroup) => userGroup.groupId == group.id).map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId).nickname).join(', ')}")
+                                "Users: ${userGroups.map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId).nickname).join(', ')}")
                           ],
                         ),
                       ),

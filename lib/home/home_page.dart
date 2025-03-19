@@ -89,7 +89,9 @@ class _HomePageState extends State<HomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute<SpecificGroupPage>(
-                                  builder: (BuildContext context) => SpecificGroupPage(),
+                                  builder: (BuildContext context) => SpecificGroupPage(
+                                    userGroupClass: userGroups.firstWhere((UserGroupClass userGroup) => userGroup.groupId == group.id),
+                                  ),
                                 ),
                               );
                             },

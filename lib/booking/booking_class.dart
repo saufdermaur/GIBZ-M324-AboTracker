@@ -5,10 +5,12 @@ class BookingClass {
   BookingClass({this.id = "", required this.time});
 
   factory BookingClass.fromMap(Map<String, dynamic> map) {
-    return BookingClass(id: map["id"] as String, time: map["time"] as DateTime);
+    return BookingClass(id: map["id"] as String, time: DateTime.parse(map["time"] as String));
   }
 
   Map<String, dynamic> toMap() {
-    return <String, DateTime>{"time": time};
+    return <String, String>{
+      "time": time.toIso8601String(),
+    };
   }
 }

@@ -5,8 +5,9 @@ class BookingService {
   final SupabaseQueryBuilder _supabaseClient = Supabase.instance.client.from("bookings");
 
   // Create
-  Future<void> createBooking(BookingClass newBooking) async {
-    await _supabaseClient.insert(newBooking.toMap());
+  Future<BookingClass> createBooking(BookingClass newBooking) async {
+    final PostgrestMap response =  await _supabaseClient.insert(newBooking.toMap()).select().single();
+    return BookingClass.fromMap(response);
   }
 
   // Read stream

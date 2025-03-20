@@ -115,24 +115,25 @@ class _GroupPageState extends State<GroupPage> {
                         inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                       ),
                     ),
-                    Wrap(
-                      spacing: 5.0,
-                      runSpacing: 5.0,
+                    Column(
                       children: users.map((UserClass user) {
-                        return ChoiceChip(
-                          label: Text(user.nickname),
-                          selected: _selectedUsers.contains(user),
-                          onSelected: (bool selected) {
-                            setDialogState(() {
-                              if (selected) {
-                                if (!_selectedUsers.any((UserClass u) => u.id == user.id)) {
-                                  _selectedUsers.add(user);
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2.0),
+                          child: ChoiceChip(
+                            label: Text(user.nickname),
+                            selected: _selectedUsers.contains(user),
+                            onSelected: (bool selected) {
+                              setDialogState(() {
+                                if (selected) {
+                                  if (!_selectedUsers.any((UserClass u) => u.id == user.id)) {
+                                    _selectedUsers.add(user);
+                                  }
+                                } else {
+                                  _selectedUsers.removeWhere((UserClass u) => u.id == user.id);
                                 }
-                              } else {
-                                _selectedUsers.removeWhere((UserClass u) => u.id == user.id);
-                              }
-                            });
-                          },
+                              });
+                            },
+                          ),
                         );
                       }).toList(),
                     )
@@ -240,24 +241,25 @@ class _GroupPageState extends State<GroupPage> {
                           inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                         ),
                       ),
-                      Wrap(
-                        spacing: 5.0,
-                        runSpacing: 5.0,
+                      Column(
                         children: users.map((UserClass user) {
-                          return ChoiceChip(
-                            label: Text(user.nickname),
-                            selected: tempUsersModified.contains(user),
-                            onSelected: (bool selected) {
-                              setDialogState(() {
-                                if (selected) {
-                                  if (!tempUsersModified.any((UserClass u) => u.id == user.id)) {
-                                    tempUsersModified.add(user);
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2.0),
+                            child: ChoiceChip(
+                              label: Text(user.nickname),
+                              selected: tempUsersModified.contains(user),
+                              onSelected: (bool selected) {
+                                setDialogState(() {
+                                  if (selected) {
+                                    if (!tempUsersModified.any((UserClass u) => u.id == user.id)) {
+                                      tempUsersModified.add(user);
+                                    }
+                                  } else {
+                                    tempUsersModified.removeWhere((UserClass u) => u.id == user.id);
                                   }
-                                } else {
-                                  tempUsersModified.removeWhere((UserClass u) => u.id == user.id);
-                                }
-                              });
-                            },
+                                });
+                              },
+                            ),
                           );
                         }).toList(),
                       )

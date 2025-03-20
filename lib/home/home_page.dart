@@ -91,6 +91,8 @@ class _HomePageState extends State<HomePage> {
                                 MaterialPageRoute<SpecificGroupPage>(
                                   builder: (BuildContext context) => SpecificGroupPage(
                                     userGroupClass: userGroups.firstWhere((UserGroupClass userGroup) => userGroup.groupId == group.id),
+                                    totalCost: group.totalCost!,
+                                    costPerBooking: group.costPerBooking!,
                                   ),
                                 ),
                               );

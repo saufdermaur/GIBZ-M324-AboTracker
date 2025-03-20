@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:squash_tracker/booking/booking_class.dart';
 import 'package:squash_tracker/booking/booking_service.dart';
 import 'package:squash_tracker/user/user_class.dart';
@@ -11,8 +10,10 @@ import 'package:squash_tracker/user_group_booking/user_group_booking_service.dar
 
 class SpecificGroupPage extends StatefulWidget {
   final UserGroupClass userGroupClass;
+  final int totalCost;
+  final int costPerBooking;
 
-  SpecificGroupPage({super.key, required this.userGroupClass});
+  SpecificGroupPage({super.key, required this.userGroupClass, required this.totalCost, required this.costPerBooking});
 
   @override
   State<SpecificGroupPage> createState() => _SpecificGroupPageState();
@@ -20,12 +21,10 @@ class SpecificGroupPage extends StatefulWidget {
 
 class _SpecificGroupPageState extends State<SpecificGroupPage> {
   late final UserGroupClass userGroupClass;
+  late final int totalCost;
+  late final int costPerBooking;
 
-  final UserService userDatabase = UserService();
-
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _totalCostController = TextEditingController();
 
   final List<UserClass> _selectedUsers = <UserClass>[];
   final UserService _userDatabase = UserService();
@@ -35,22 +34,21 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
 
   List<UserClass> users = <UserClass>[];
   List<UserGroupClass> userGroups = <UserGroupClass>[];
-  List<UserGroupBooking> userGroupsBookings = <UserGroupBooking>[];
   List<BookingClass> bookings = <BookingClass>[];
 
   @override
   void initState() {
     super.initState();
     userGroupClass = widget.userGroupClass;
+    totalCost = widget.totalCost;
+    costPerBooking = widget.costPerBooking;
     getUsers();
   }
 
   void cleanFields() {
     Navigator.pop(context);
 
-    _nameController.clear();
     _dateController.clear();
-    _totalCostController.clear();
     _selectedUsers.clear();
 
     getUsers();
@@ -58,16 +56,16 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
 
   Future<void> getUsers() async {
     try {
+      _dateController.text = DateTime.now().toLocal().toString().split(' ')[0];
+
       final List<UserClass> fetchedUsers = await _userDatabase.getUsers();
       final List<UserGroupClass> fetchedUserGroups = await _userGroupDatabase.getUserGroupGroupId(userGroupClass.groupId);
-      final List<UserGroupBooking> fetchedUserGroupsBookings = await _userGroupBookingDatabase.getUserGroupBooking(fetchedUserGroups);
       final List<BookingClass> fetchedBookings = await _bookingDatabase.getBookings();
 
       if (mounted) {
         setState(() {
           users = fetchedUsers;
           userGroups = fetchedUserGroups;
-          userGroupsBookings = fetchedUserGroupsBookings;
           bookings = fetchedBookings;
         });
       }
@@ -91,28 +89,28 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Container(
-                        padding: const EdgeInsets.all(10),
-                        child: TextField(
-                          controller: _dateController..text = "${DateTime.now().toLocal()}".split(' ')[0],
-                          decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Datum"),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                          onTap: () async {
-                            FocusScope.of(context).requestFocus(FocusNode());
-                            DateTime? pickedDate = await showDatePicker(
-                              context: context,
-                              initialDate: DateTime.now(),
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime(2101),
-                            );
-                            if (pickedDate != null) {
-                              setState(() {
-                                _dateController.text = "${pickedDate.toLocal()}".split(' ')[0];
-                              });
-                            }
-                          },
-                        ),
-                      ),
+                          padding: const EdgeInsets.all(10),
+                          child: TextField(
+                            controller: _dateController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: "Datum",
+                            ),
+                            readOnly: true,
+                            onTap: () async {
+                              DateTime? pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2101),
+                              );
+                              if (pickedDate != null) {
+                                setState(() {
+                                  _dateController.text = pickedDate.toLocal().toString().split(' ')[0];
+                                });
+                              }
+                            },
+                          )),
                       Column(
                         children: users.map((UserClass user) {
                           return Padding(
@@ -211,8 +209,10 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
           uniqueBookingIds.sort((String a, String b) {
             final DateTime timeA = bookings.firstWhere((BookingClass booking) => booking.id == a).time;
             final DateTime timeB = bookings.firstWhere((BookingClass booking) => booking.id == b).time;
-            return timeB.compareTo(timeA);
+            return timeA.compareTo(timeB);
           });
+
+          int intermediateCost = totalCost;
 
           return Stack(
             children: <Widget>[
@@ -231,13 +231,44 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                     return user.nickname;
                   }).toList();
 
+                  intermediateCost -= 25;
+
                   return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    child: ListTile(
-                      title: Text("Buchung: ${bookingTime.toLocal().toString().split(' ')[0]}"),
-                      subtitle: Text("Users: ${usersForBooking.join(', ')}"),
-                    ),
-                  );
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: ListTile(
+                        title: Text("Buchung: ${bookingTime.toLocal().toString().split(' ')[0]}"),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[Text("Users: ${usersForBooking.join(', ')}")],
+                        ),
+                        trailing: SizedBox(
+                          width: 250,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              Expanded(
+                                child: Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Text("Saldo: $intermediateCost"),
+                                      Text("Verbleibend: ${(intermediateCost / costPerBooking).toStringAsFixed(2)}"),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () => () {},
+                                icon: Icon(Icons.edit),
+                              ),
+                              IconButton(
+                                onPressed: () => () {},
+                                icon: Icon(Icons.delete),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ));
                 },
               ),
               Positioned(

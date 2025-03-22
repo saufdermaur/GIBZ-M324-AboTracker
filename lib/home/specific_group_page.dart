@@ -59,11 +59,13 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     try {
       final List<UserGroupClass> fetchedUserGroups = await _userGroupDatabase.getUserGroupGroupId(userGroupClass.groupId);
       final List<BookingClass> fetchedBookings = await _bookingDatabase.getBookings();
-      
+      final List<UserGroupBooking> fetchedUserGroupBookings = await _userGroupBookingDatabase.getUserGroupBooking(fetchedUserGroups);
+
       if (mounted) {
         setState(() {
           userGroups = fetchedUserGroups;
           bookings = fetchedBookings;
+          userGroupBookings = fetchedUserGroupBookings;
         });
       }
     } catch (e) {
@@ -336,16 +338,16 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
           },
         ),
       ),
-      body: StreamBuilder<List<UserGroupBooking>>(
-        stream: _userGroupBookingDatabase.stream,
-        builder: (BuildContext context, AsyncSnapshot<List<UserGroupBooking>> snapshot) {
-          if (!snapshot.hasData || usersClass.isEmpty || userGroups.isEmpty) {
+      body: FutureBuilder<List<BookingClass>>(
+        future: _bookingDatabase.getBookings(),
+        builder: (BuildContext context, AsyncSnapshot<List<BookingClass>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData || usersClass.isEmpty || userGroups.isEmpty) {
             return Center(
               child: CircularProgressIndicator(),
             );
           }
 
-          userGroupBookings = snapshot.data!;
+          bookings = snapshot.data!;
 
           if (userGroupBookings.isEmpty) {
             return Center(
@@ -360,7 +362,14 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
             );
           }
 
+          bookings = snapshot.data!;
           final List<String> uniqueBookingIds = userGroupBookings.map((UserGroupBooking e) => e.bookingId).toSet().toList();
+
+          uniqueBookingIds.sort((String a, String b) {
+            final DateTime timeA = bookings.firstWhere((BookingClass booking) => booking.id == a).time;
+            final DateTime timeB = bookings.firstWhere((BookingClass booking) => booking.id == b).time;
+            return timeA.compareTo(timeB);
+          });
 
           int intermediateCost = totalCost;
           int intermediateAvailableUnits = availableUnits;
@@ -372,13 +381,14 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                 itemCount: uniqueBookingIds.length,
                 itemBuilder: (BuildContext context, int index) {
                   final String bookingId = uniqueBookingIds[index];
-                  final DateTime bookingTime = bookings.firstWhere((BookingClass booking) => booking.id == bookingId).time;
+                  final BookingClass booking = bookings.firstWhere((BookingClass b) => b.id == bookingId);
+
+                  final DateTime bookingTime = booking.time;
                   final List<String> usersForBooking = userGroupBookings
                       .where((UserGroupBooking userGroupBooking) => userGroupBooking.bookingId == bookingId)
                       .map((UserGroupBooking userGroupBooking) {
-                    final UserGroupClass userGroup =
-                        userGroups.firstWhere((UserGroupClass userGroup) => userGroup.id == userGroupBooking.userGroupId);
-                    final UserClass user = usersClass.firstWhere((UserClass user) => user.id == userGroup.userId);
+                    final UserGroupClass userGroup = userGroups.firstWhere((UserGroupClass group) => group.id == userGroupBooking.userGroupId);
+                    final UserClass user = usersClass.firstWhere((UserClass u) => u.id == userGroup.userId);
                     return user.nickname;
                   }).toList();
 
@@ -386,41 +396,39 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                   intermediateAvailableUnits -= 1;
 
                   return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      child: ListTile(
-                        title: Text("Buchung: ${bookingTime.toLocal().toString().split(' ')[0]}"),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[Text("Users: ${usersForBooking.join(', ')}")],
-                        ),
-                        trailing: SizedBox(
-                          width: 250,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              Expanded(
-                                child: Center(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Text("Saldo: $intermediateCost"),
-                                      Text("Verbleibend: $intermediateAvailableUnits"),
-                                    ],
-                                  ),
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      title: Text("Buchung: ${bookingTime.toLocal().toString().split(' ')[0]}"),
+                      subtitle: Text("Users: ${usersForBooking.join(', ')}"),
+                      trailing: SizedBox(
+                        width: 250,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Expanded(
+                              child: Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Text("Saldo: $intermediateCost"),
+                                    Text("Verbleibend: $intermediateAvailableUnits"),
+                                  ],
                                 ),
                               ),
-                              IconButton(
-                                onPressed: () => updateNewBooking(bookings[index]),
-                                icon: Icon(Icons.edit),
-                              ),
-                              IconButton(
-                                onPressed: () => deleteGroup(bookings[index]),
-                                icon: Icon(Icons.delete),
-                              ),
-                            ],
-                          ),
+                            ),
+                            IconButton(
+                              onPressed: () => updateNewBooking(booking),
+                              icon: const Icon(Icons.edit),
+                            ),
+                            IconButton(
+                              onPressed: () => deleteGroup(booking),
+                              icon: const Icon(Icons.delete),
+                            ),
+                          ],
                         ),
-                      ));
+                      ),
+                    ),
+                  );
                 },
               ),
               Positioned(
@@ -428,7 +436,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                 right: 16,
                 child: FloatingActionButton(
                   onPressed: addNewBooking,
-                  child: Icon(Icons.add),
+                  child: const Icon(Icons.add),
                 ),
               ),
             ],

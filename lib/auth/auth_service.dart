@@ -11,19 +11,13 @@ class AuthService {
 
   // Sign up
   Future<AuthResponse> signUpWithEmailPassword(String nickname, String email, String password) async {
-    await _supabaseClientAuth.signUp(email: email, password: password);
-    return await _supabaseClientUser.update(<String, dynamic>{"nickname": nickname}).eq("email", email);
+    AuthResponse user = await _supabaseClientAuth.signUp(email: email, password: password);
+    await _supabaseClientUser.update(<String, dynamic>{"email": user.user!.email, "nickname": nickname}).eq("id", user.user!.id);
+    return user;
   }
 
   // Sign out
   Future<void> signOut() async {
     await _supabaseClientAuth.signOut();
-  }
-
-  // Get email
-  String? getCurrentUserEmail() {
-    final Session? session = _supabaseClientAuth.currentSession;
-    final User? user = session?.user;
-    return user?.email;
   }
 }

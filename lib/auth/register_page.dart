@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:squash_tracker/auth/auth_service.dart';
+import 'package:abo_tracker/auth/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -23,7 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
     final String confirmPassword = _confirmPasswordController.text;
 
     if (password != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Passwords don't match")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Passwörter stimmen nicht überein")));
       return;
     }
 
@@ -34,7 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
       }
     }
   }
@@ -43,7 +43,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Sign Up"),
+        title: const Text("Registrieren"),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 50),
@@ -52,7 +52,7 @@ class _RegisterPageState extends State<RegisterPage> {
             padding: const EdgeInsets.all(10),
             child: TextField(
               controller: _nicknameController,
-              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Nickname"),
+              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Benutzername"),
             ),
           ),
           Container(
@@ -66,7 +66,7 @@ class _RegisterPageState extends State<RegisterPage> {
             padding: const EdgeInsets.all(10),
             child: TextField(
               controller: _passwordController,
-              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Password"),
+              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Passwort"),
               obscureText: true,
             ),
           ),
@@ -74,7 +74,7 @@ class _RegisterPageState extends State<RegisterPage> {
             padding: const EdgeInsets.all(10),
             child: TextField(
               controller: _confirmPasswordController,
-              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Confirm Password"),
+              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Passwort bestätigen"),
               obscureText: true,
             ),
           ),
@@ -85,7 +85,7 @@ class _RegisterPageState extends State<RegisterPage> {
             padding: const EdgeInsets.all(10),
             child: ElevatedButton(
               onPressed: signUp,
-              child: const Text("Sign Up"),
+              child: const Text("Registrieren"),
             ),
           ),
           const SizedBox(

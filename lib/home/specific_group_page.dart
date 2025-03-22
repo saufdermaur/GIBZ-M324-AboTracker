@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:squash_tracker/booking/booking_class.dart';
-import 'package:squash_tracker/booking/booking_service.dart';
-import 'package:squash_tracker/user/user_class.dart';
-import 'package:squash_tracker/user_group/user_group_class.dart';
-import 'package:squash_tracker/user_group/user_group_service.dart';
-import 'package:squash_tracker/user_group_booking/user_group_booking_class.dart';
-import 'package:squash_tracker/user_group_booking/user_group_booking_service.dart';
+import 'package:abo_tracker/booking/booking_class.dart';
+import 'package:abo_tracker/booking/booking_service.dart';
+import 'package:abo_tracker/user/user_class.dart';
+import 'package:abo_tracker/user_group/user_group_class.dart';
+import 'package:abo_tracker/user_group/user_group_service.dart';
+import 'package:abo_tracker/user_group_booking/user_group_booking_class.dart';
+import 'package:abo_tracker/user_group_booking/user_group_booking_service.dart';
 
 class SpecificGroupPage extends StatefulWidget {
   final UserGroupClass userGroupClass;
   final List<UserClass> usersClass;
   final int totalCost;
   final int availableUnits;
+  final String groupName;
 
-  SpecificGroupPage({super.key, required this.userGroupClass, required this.usersClass, required this.totalCost, required this.availableUnits});
+  SpecificGroupPage({super.key, required this.userGroupClass, required this.usersClass, required this.totalCost, required this.availableUnits, required this.groupName});
 
   @override
   State<SpecificGroupPage> createState() => _SpecificGroupPageState();
@@ -25,6 +26,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
   late final int totalCost;
   late final int availableUnits;
   late int costPerBooking;
+  late final String groupName;
 
   final TextEditingController _dateController = TextEditingController();
 
@@ -46,6 +48,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     totalCost = widget.totalCost;
     availableUnits = widget.availableUnits;
     costPerBooking = (totalCost / availableUnits).round();
+    groupName = widget.groupName;
 
     getUsers();
   }
@@ -76,7 +79,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
       }
     }
   }
@@ -90,7 +93,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
           return StatefulBuilder(
             builder: (BuildContext context, void Function(void Function()) setDialogState) {
               return AlertDialog(
-                title: const Text("New Booking"),
+                title: const Text("Neue Buchung"),
                 content: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -179,7 +182,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
       await _userGroupDatabase.updateMultipleUserGroup(mappedUserGroups, costPerBooking);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
       }
     } finally {
       if (mounted) {
@@ -207,7 +210,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
           return StatefulBuilder(
             builder: (BuildContext context, void Function(void Function()) setDialogState) {
               return AlertDialog(
-                title: const Text("Update Booking"),
+                title: const Text("Buchung ändern"),
                 content: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -283,12 +286,6 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
   }
 
   void changeBooking(BookingClass oldBooking, List<UserClass> tempUsersSource, List<UserClass> tempUsersModified) async {
-/*
-    final List<UserGroupClass> mappedUserGroups = tempUsersModified.map((UserClass user) {
-      return userGroups.firstWhere((UserGroupClass group) => group.userId == user.id);
-    }).toList();
-    */
-
     try {
       for (UserClass user in tempUsersSource) {
         if (!tempUsersModified.contains(user)) {
@@ -308,7 +305,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
       }
     } finally {
       if (mounted) {
@@ -332,7 +329,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
       if (mounted) {}
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
       }
     } finally {
       if (mounted) {
@@ -345,7 +342,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-              title: const Text("Delete Group"),
+              title: const Text("Gruppe löschen"),
               actions: <Widget>[
                 Container(
                   padding: const EdgeInsets.all(10),
@@ -369,7 +366,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Specific Group'),
+        title: Text(groupName),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -421,8 +418,8 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                   title: Center(
                     child: Column(
                       children: <Widget>[
-                        Text("Total: $totalCost"),
-                        Text("Saldo: ${totalCost - (bookings.length * costPerBooking)}"),
+                        Text("Total: $totalCost.-"),
+                        Text("Saldo: ${totalCost - (bookings.length * costPerBooking)}.-"),
                         Text("Verbleibend: ${availableUnits - bookings.length}"),
                       ],
                     ),
@@ -464,8 +461,8 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         child: ListTile(
-                          title: Text("Buchung: ${bookingTime.toLocal().toString().split(' ')[0]}"),
-                          subtitle: Text("Users: ${usersForBooking.join(', ')}"),
+                          title: Text("Datum: ${bookingTime.toLocal().toString().split(' ')[0]}"),
+                          subtitle: Text("Benutzer: ${usersForBooking.join(', ')}"),
                           trailing: SizedBox(
                             width: 250,
                             child: Row(
@@ -477,7 +474,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
                                         Text("Saldo: $intermediateCost"),
-                                        Text("Verbleibend: $intermediateAvailableUnits"),
+                                        Text("Verbleibend: $intermediateAvailableUnits.-"),
                                       ],
                                     ),
                                   ),

@@ -1,4 +1,4 @@
-import 'package:squash_tracker/group/group_class.dart';
+import 'package:abo_tracker/group/group_class.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class GroupService {

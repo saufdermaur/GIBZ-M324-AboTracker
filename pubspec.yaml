@@ -1,5 +1,5 @@
-name: squash_tracker
-description: A Squash-Tracker-App.
+name: abo_tracker
+description: A Abo-Tracker-App.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 

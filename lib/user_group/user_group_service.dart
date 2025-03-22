@@ -1,5 +1,5 @@
-import 'package:squash_tracker/user/user_class.dart';
-import 'package:squash_tracker/user_group/user_group_class.dart';
+import 'package:abo_tracker/user/user_class.dart';
+import 'package:abo_tracker/user_group/user_group_class.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserGroupService {

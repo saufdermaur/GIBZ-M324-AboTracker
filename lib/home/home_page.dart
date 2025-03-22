@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:squash_tracker/group/group_class.dart';
-import 'package:squash_tracker/group/group_service.dart';
-import 'package:squash_tracker/home/specific_group_page.dart';
-import 'package:squash_tracker/user/user_class.dart';
-import 'package:squash_tracker/user/user_service.dart';
-import 'package:squash_tracker/user_group/user_group_class.dart';
-import 'package:squash_tracker/user_group/user_group_service.dart';
+import 'package:abo_tracker/group/group_class.dart';
+import 'package:abo_tracker/group/group_service.dart';
+import 'package:abo_tracker/home/specific_group_page.dart';
+import 'package:abo_tracker/user/user_class.dart';
+import 'package:abo_tracker/user/user_service.dart';
+import 'package:abo_tracker/user_group/user_group_class.dart';
+import 'package:abo_tracker/user_group/user_group_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
       }
     }
   }
@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> {
                       Icon(Icons.subscriptions, size: 40),
                       SizedBox(height: 8),
                       Text(
-                        "Subscription Tracker",
+                        "Abo-Tracker",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -95,10 +95,10 @@ class _HomePageState extends State<HomePage> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Total Cost: \$${group.totalCost}'),
+                          Text('Gesamtkosten: ${group.totalCost}.-'),
                           Text('Total verfügbare Einheiten: ${group.availableUnits}'),
                           Text(
-                              "Users: ${userGroups.where((UserGroupClass userGroup) => userGroup.groupId == group.id).map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId).nickname).join(', ')}")
+                              "Benutzer: ${userGroups.where((UserGroupClass userGroup) => userGroup.groupId == group.id).map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId).nickname).join(', ')}")
                         ],
                       ),
                       trailing: SizedBox(
@@ -119,6 +119,7 @@ class _HomePageState extends State<HomePage> {
                                           .toList(),
                                       totalCost: group.totalCost!,
                                       availableUnits: group.availableUnits!,
+                                      groupName: group.name,
                                     ),
                                   ),
                                 );

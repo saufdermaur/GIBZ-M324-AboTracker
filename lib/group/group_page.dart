@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:squash_tracker/group/group_class.dart';
-import 'package:squash_tracker/group/group_service.dart';
-import 'package:squash_tracker/user/user_class.dart';
-import 'package:squash_tracker/user/user_service.dart';
-import 'package:squash_tracker/user_group/user_group_class.dart';
-import 'package:squash_tracker/user_group/user_group_service.dart';
+import 'package:abo_tracker/group/group_class.dart';
+import 'package:abo_tracker/group/group_service.dart';
+import 'package:abo_tracker/user/user_class.dart';
+import 'package:abo_tracker/user/user_service.dart';
+import 'package:abo_tracker/user_group/user_group_class.dart';
+import 'package:abo_tracker/user_group/user_group_service.dart';
 
 class GroupPage extends StatefulWidget {
   const GroupPage({super.key});
@@ -54,7 +54,7 @@ class _GroupPageState extends State<GroupPage> {
       await _userGroupDatabase.createUserGroup(group.id, _selectedUsers);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
       }
     } finally {
       if (mounted) {
@@ -75,7 +75,7 @@ class _GroupPageState extends State<GroupPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
       }
     }
   }
@@ -87,7 +87,7 @@ class _GroupPageState extends State<GroupPage> {
         return StatefulBuilder(
           builder: (BuildContext context, void Function(void Function()) setDialogState) {
             return AlertDialog(
-              title: const Text("New Group"),
+              title: const Text("Neue Gruppe"),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -185,7 +185,7 @@ class _GroupPageState extends State<GroupPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
       }
     } finally {
       if (mounted) {
@@ -213,7 +213,7 @@ class _GroupPageState extends State<GroupPage> {
           return StatefulBuilder(
             builder: (BuildContext context, void Function(void Function()) setDialogState) {
               return AlertDialog(
-                title: const Text("Edit Group"),
+                title: const Text("Gruppe bearbeiten"),
                 content: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -296,7 +296,7 @@ class _GroupPageState extends State<GroupPage> {
       if (mounted) {}
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
       }
     } finally {
       if (mounted) {
@@ -309,7 +309,7 @@ class _GroupPageState extends State<GroupPage> {
     showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-              title: const Text("Delete Group"),
+              title: const Text("Gruppe löschen"),
               actions: <Widget>[
                 Container(
                   padding: const EdgeInsets.all(10),
@@ -357,10 +357,10 @@ class _GroupPageState extends State<GroupPage> {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('Total Cost: \$${group.totalCost}'),
+                        Text('Gesamtkosten: ${group.totalCost}.-'),
                         Text('Total verfügbare Einheiten: ${group.availableUnits}'),
                         Text(
-                            "Users: ${userGroups.where((UserGroupClass userGroup) => userGroup.groupId == group.id).map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId).nickname).join(', ')}")
+                            "Benutzer: ${userGroups.where((UserGroupClass userGroup) => userGroup.groupId == group.id).map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId).nickname).join(', ')}")
                       ],
                     ),
                     trailing: SizedBox(

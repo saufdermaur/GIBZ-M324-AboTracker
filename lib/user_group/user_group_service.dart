@@ -8,7 +8,7 @@ class UserGroupService {
   // Create
   Future<void> createUserGroup(String groupId, List<UserClass> users) async {
     for (UserClass user in users) {
-      await _supabaseClient.insert(<String, String>{"user_id": user.id, "group_id": groupId});
+      await _supabaseClient.insert(<String, dynamic>{"user_id": user.id, "group_id": groupId, "cost": 0});
     }
   }
 
@@ -25,8 +25,15 @@ class UserGroupService {
   }
 
   // Update
-  Future<void> updateUserGroup(UserGroupClass oldUserGroup, String userId, String groupId) async {
-    await _supabaseClient.update(<String, String>{"user_id": userId, "group_id": groupId}).eq("id", oldUserGroup.id);
+  Future<void> updateUserGroup(UserGroupClass oldUserGroup, String userId, String groupId, int cost) async {
+    await _supabaseClient.update(<String, dynamic>{"user_id": userId, "group_id": groupId, "cost": cost}).eq("id", oldUserGroup.id);
+  }
+
+  // Update multiple userGroups
+  Future<void> updateMultipleUserGroup(List<UserGroupClass> oldUserGroups, int cost) async {
+    for (UserGroupClass oldUserGroup in oldUserGroups) {
+      await _supabaseClient.update(<String, dynamic>{"cost": oldUserGroup.cost + cost}).eq("id", oldUserGroup.id);
+    }
   }
 
   // Delete

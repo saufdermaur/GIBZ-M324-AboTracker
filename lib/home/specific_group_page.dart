@@ -24,6 +24,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
   late final List<UserClass> usersClass;
   late final int totalCost;
   late final int availableUnits;
+  late int costPerBooking;
 
   final TextEditingController _dateController = TextEditingController();
 
@@ -43,6 +44,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     usersClass = widget.usersClass;
     totalCost = widget.totalCost;
     availableUnits = widget.availableUnits;
+    costPerBooking = (totalCost / availableUnits).round();
     getUsers();
   }
 
@@ -170,6 +172,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
       }).toList();
 
       await _userGroupBookingDatabase.createUserGroupBooking(booking.id, mappedUserGroups);
+      await _userGroupDatabase.updateMultipleUserGroup(mappedUserGroups, costPerBooking);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
@@ -289,7 +292,16 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
 
   void deleteGroupFunction(BookingClass booking) async {
     try {
+      final List<UserGroupClass> mappedUserGroups = userGroupBookings
+          .where((UserGroupBooking userGroupBooking) => userGroupBooking.bookingId == booking.id)
+          .map((UserGroupBooking userGroupBooking) {
+        final UserGroupClass userGroup = userGroups.firstWhere((UserGroupClass group) => group.id == userGroupBooking.userGroupId);
+        return userGroup;
+      }).toList();
+
+      await _userGroupDatabase.updateMultipleUserGroup(mappedUserGroups, -costPerBooking);
       await _bookingDatabase.deleteBooking(booking); // is enough because we cascade
+
       if (mounted) {}
     } catch (e) {
       if (mounted) {

@@ -59,57 +59,80 @@ class _HomePageState extends State<HomePage> {
         }
 
         groups = snapshot.data!;
-        return Stack(
+        return Column(
           children: <Widget>[
-            ListView.builder(
-              padding: const EdgeInsets.all(8),
-              itemCount: groups.length,
-              itemBuilder: (BuildContext context, int index) {
-                GroupClass group = groups[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: ListTile(
-                    title: Text(group.name),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text('Total Cost: \$${group.totalCost}'),
-                        Text('Total verfügbare Einheiten: ${group.availableUnits}'),
-                        Text(
-                            "Users: ${userGroups.where((UserGroupClass userGroup) => userGroup.groupId == group.id).map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId).nickname).join(', ')}")
-                      ],
-                    ),
-                    trailing: SizedBox(
-                      width: 100,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+            Card(
+              margin: const EdgeInsets.all(8),
+              child: ListTile(
+                title: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(Icons.subscriptions, size: 40),
+                      SizedBox(height: 8),
+                      Text(
+                        "Subscription Tracker",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(8),
+                itemCount: groups.length,
+                itemBuilder: (BuildContext context, int index) {
+                  GroupClass group = groups[index];
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      title: Text(group.name),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          IconButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute<SpecificGroupPage>(
-                                  builder: (BuildContext context) => SpecificGroupPage(
-                                    userGroupClass: userGroups.firstWhere((UserGroupClass userGroup) => userGroup.groupId == group.id),
-                                    usersClass: userGroups
-                                        .where((UserGroupClass userGroup) => userGroup.groupId == group.id)
-                                        .map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId))
-                                        .toList(),
-                                    totalCost: group.totalCost!,
-                                    availableUnits: group.availableUnits!,
-                                  ),
-                                ),
-                              );
-                            },
-                            icon: Icon(Icons.arrow_forward),
-                          ),
+                          Text('Total Cost: \$${group.totalCost}'),
+                          Text('Total verfügbare Einheiten: ${group.availableUnits}'),
+                          Text(
+                              "Users: ${userGroups.where((UserGroupClass userGroup) => userGroup.groupId == group.id).map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId).nickname).join(', ')}")
                         ],
                       ),
+                      trailing: SizedBox(
+                        width: 100,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute<SpecificGroupPage>(
+                                    builder: (BuildContext context) => SpecificGroupPage(
+                                      userGroupClass: userGroups.firstWhere((UserGroupClass userGroup) => userGroup.groupId == group.id),
+                                      usersClass: userGroups
+                                          .where((UserGroupClass userGroup) => userGroup.groupId == group.id)
+                                          .map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId))
+                                          .toList(),
+                                      totalCost: group.totalCost!,
+                                      availableUnits: group.availableUnits!,
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: Icon(Icons.arrow_forward),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
+            )
           ],
         );
       },

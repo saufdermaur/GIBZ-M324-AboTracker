@@ -413,69 +413,98 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
           int intermediateCost = totalCost;
           int intermediateAvailableUnits = availableUnits;
 
-          return Stack(
+          return Column(
             children: <Widget>[
-              ListView.builder(
-                padding: const EdgeInsets.all(8),
-                itemCount: uniqueBookingIds.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final String bookingId = uniqueBookingIds[index];
-                  final BookingClass booking = bookings.firstWhere((BookingClass b) => b.id == bookingId);
-
-                  final DateTime bookingTime = booking.time;
-                  final List<String> usersForBooking = userGroupBookings
-                      .where((UserGroupBooking userGroupBooking) => userGroupBooking.bookingId == bookingId)
-                      .map((UserGroupBooking userGroupBooking) {
-                    final UserGroupClass userGroup = userGroups.firstWhere((UserGroupClass group) => group.id == userGroupBooking.userGroupId);
-                    final UserClass user = usersClass.firstWhere((UserClass u) => u.id == userGroup.userId);
-                    return user.nickname;
-                  }).toList();
-
-                  intermediateCost -= 25;
-                  intermediateAvailableUnits -= 1;
-
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    child: ListTile(
-                      title: Text("Buchung: ${bookingTime.toLocal().toString().split(' ')[0]}"),
-                      subtitle: Text("Users: ${usersForBooking.join(', ')}"),
-                      trailing: SizedBox(
-                        width: 250,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            Expanded(
-                              child: Center(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Text("Saldo: $intermediateCost"),
-                                    Text("Verbleibend: $intermediateAvailableUnits"),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () => updateNewBooking(booking),
-                              icon: const Icon(Icons.edit),
-                            ),
-                            IconButton(
-                              onPressed: () => deleteGroup(booking),
-                              icon: const Icon(Icons.delete),
-                            ),
-                          ],
-                        ),
-                      ),
+              Card(
+                margin: const EdgeInsets.all(8),
+                child: ListTile(
+                  title: Center(
+                    child: Column(
+                      children: <Widget>[
+                        Text("Total: $totalCost"),
+                        Text("Saldo: ${totalCost - (bookings.length * costPerBooking)}"),
+                        Text("Verbleibend: ${availableUnits - bookings.length}"),
+                      ],
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
-              Positioned(
-                bottom: 16,
-                right: 16,
-                child: FloatingActionButton(
-                  onPressed: addNewBooking,
-                  child: const Icon(Icons.add),
+              Card(
+                margin: const EdgeInsets.all(8),
+                child: ListTile(
+                  subtitle: Column(
+                    children: usersClass.map((UserClass user) {
+                      return Center(
+                        child: Text("${user.nickname} : ${userGroups.firstWhere((UserGroupClass userGroup) => userGroup.userId == user.id).cost}.-"),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                    padding: const EdgeInsets.all(8),
+                    itemCount: uniqueBookingIds.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final String bookingId = uniqueBookingIds[index];
+                      final BookingClass booking = bookings.firstWhere((BookingClass b) => b.id == bookingId);
+
+                      final DateTime bookingTime = booking.time;
+                      final List<String> usersForBooking = userGroupBookings
+                          .where((UserGroupBooking userGroupBooking) => userGroupBooking.bookingId == bookingId)
+                          .map((UserGroupBooking userGroupBooking) {
+                        final UserGroupClass userGroup = userGroups.firstWhere((UserGroupClass group) => group.id == userGroupBooking.userGroupId);
+                        final UserClass user = usersClass.firstWhere((UserClass u) => u.id == userGroup.userId);
+                        return user.nickname;
+                      }).toList();
+
+                      intermediateCost -= (totalCost / availableUnits).round();
+                      intermediateAvailableUnits -= 1;
+
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        child: ListTile(
+                          title: Text("Buchung: ${bookingTime.toLocal().toString().split(' ')[0]}"),
+                          subtitle: Text("Users: ${usersForBooking.join(', ')}"),
+                          trailing: SizedBox(
+                            width: 250,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Text("Saldo: $intermediateCost"),
+                                        Text("Verbleibend: $intermediateAvailableUnits"),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () => updateNewBooking(booking),
+                                  icon: const Icon(Icons.edit),
+                                ),
+                                IconButton(
+                                  onPressed: () => deleteGroup(booking),
+                                  icon: const Icon(Icons.delete),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: FloatingActionButton(
+                    onPressed: addNewBooking,
+                    child: const Icon(Icons.add),
+                  ),
                 ),
               ),
             ],

@@ -6,10 +6,15 @@ class UserGroupBookingService {
   final SupabaseQueryBuilder _supabaseClient = Supabase.instance.client.from("users_groups_bookings");
 
   // Create
-  Future<void> createUserGroupBooking(String bookingId, List<UserGroupClass> userGroupBooking) async {
+  Future<void> createUserGroupBookings(String bookingId, List<UserGroupClass> userGroupBooking) async {
     for (UserGroupClass groupBooking in userGroupBooking) {
       await _supabaseClient.insert(<String, String>{"users_groups_id": groupBooking.id, "bookings_id": bookingId});
     }
+  }
+
+  // Create simple
+    Future<void> createUserGroupBooking(String bookingId, UserGroupClass userGroupBooking) async {
+      await _supabaseClient.insert(<String, String>{"users_groups_id": userGroupBooking.id, "bookings_id": bookingId});
   }
 
   //Read stream

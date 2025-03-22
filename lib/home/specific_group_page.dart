@@ -36,6 +36,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
   List<UserGroupClass> userGroups = <UserGroupClass>[];
   List<BookingClass> bookings = <BookingClass>[];
   List<UserGroupBooking> userGroupBookings = <UserGroupBooking>[];
+  List<UserClass> usersOfGroup = <UserClass>[];
 
   @override
   void initState() {
@@ -45,16 +46,19 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     totalCost = widget.totalCost;
     availableUnits = widget.availableUnits;
     costPerBooking = (totalCost / availableUnits).round();
+
     getUsers();
   }
 
-  void cleanFields() {
+  void cleanFields(bool fetchUsers) {
     Navigator.pop(context);
 
     _dateController.clear();
     _selectedUsers.clear();
 
-    getUsers();
+    if (fetchUsers) {
+      getUsers();
+    }
   }
 
   Future<void> getUsers() async {
@@ -143,7 +147,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     child: ElevatedButton(
-                      onPressed: cleanFields,
+                      onPressed: () => cleanFields(false),
                       child: const Text("Abbrechen"),
                     ),
                   ),
@@ -171,7 +175,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
         return userGroups.where((UserGroupClass group) => group.userId == user.id).toList();
       }).toList();
 
-      await _userGroupBookingDatabase.createUserGroupBooking(booking.id, mappedUserGroups);
+      await _userGroupBookingDatabase.createUserGroupBookings(booking.id, mappedUserGroups);
       await _userGroupDatabase.updateMultipleUserGroup(mappedUserGroups, costPerBooking);
     } catch (e) {
       if (mounted) {
@@ -179,13 +183,23 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
       }
     } finally {
       if (mounted) {
-        cleanFields();
+        cleanFields(true);
       }
     }
   }
 
   void updateNewBooking(BookingClass booking) {
     _dateController.text = booking.time.toString().split(' ')[0];
+
+    List<UserClass> test = userGroupBookings
+        .where((UserGroupBooking userGroupBooking) => userGroupBooking.bookingId == booking.id)
+        .map((UserGroupBooking userGroupBooking) {
+      return usersClass.firstWhere(
+          (UserClass user) => user.id == userGroups.firstWhere((UserGroupClass group) => group.id == userGroupBooking.userGroupId).userId);
+    }).toList();
+
+    List<UserClass> tempUsersSource = List<UserClass>.from(test);
+    List<UserClass> tempUsersModified = List<UserClass>.from(test);
 
     showDialog(
         context: context,
@@ -227,15 +241,15 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                             padding: const EdgeInsets.symmetric(vertical: 2.0),
                             child: ChoiceChip(
                               label: Text(user.nickname),
-                              selected: _selectedUsers.contains(user),
+                              selected: tempUsersModified.contains(user),
                               onSelected: (bool selected) {
                                 setDialogState(() {
                                   if (selected) {
-                                    if (!_selectedUsers.any((UserClass u) => u.id == user.id)) {
-                                      _selectedUsers.add(user);
+                                    if (!tempUsersModified.any((UserClass u) => u.id == user.id)) {
+                                      tempUsersModified.add(user);
                                     }
                                   } else {
-                                    _selectedUsers.removeWhere((UserClass u) => u.id == user.id);
+                                    tempUsersModified.removeWhere((UserClass u) => u.id == user.id);
                                   }
                                 });
                               },
@@ -250,15 +264,15 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     child: ElevatedButton(
-                      onPressed: cleanFields,
+                      onPressed: () => cleanFields(false),
                       child: const Text("Abbrechen"),
                     ),
                   ),
                   Container(
                     padding: const EdgeInsets.all(10),
                     child: ElevatedButton(
-                      onPressed: createBooking,
-                      child: const Text("Erstellen"),
+                      onPressed: () => changeBooking(booking, tempUsersSource, tempUsersModified),
+                      child: const Text("Ändern"),
                     ),
                   ),
                 ],
@@ -268,24 +282,37 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
         });
   }
 
-  void updateBooking() async {
-    final BookingClass newBooking = BookingClass(time: DateTime.parse(_dateController.text));
+  void changeBooking(BookingClass oldBooking, List<UserClass> tempUsersSource, List<UserClass> tempUsersModified) async {
+/*
+    final List<UserGroupClass> mappedUserGroups = tempUsersModified.map((UserClass user) {
+      return userGroups.firstWhere((UserGroupClass group) => group.userId == user.id);
+    }).toList();
+    */
 
     try {
-      BookingClass booking = await _bookingDatabase.createBooking(newBooking);
+      for (UserClass user in tempUsersSource) {
+        if (!tempUsersModified.contains(user)) {
+          UserGroupClass test = userGroups.firstWhere((UserGroupClass group) => group.userId == user.id);
+          await _userGroupBookingDatabase
+              .deleteUserGroupBooking(userGroupBookings.firstWhere((UserGroupBooking userGroupBooking) => userGroupBooking.userGroupId == test.id));
+          await _userGroupDatabase.updateUserGroup(test, test.userId, test.groupId, -costPerBooking);
+        }
+      }
 
-      final List<UserGroupClass> mappedUserGroups = _selectedUsers.expand((UserClass user) {
-        return userGroups.where((UserGroupClass group) => group.userId == user.id).toList();
-      }).toList();
-
-      await _userGroupBookingDatabase.createUserGroupBooking(booking.id, mappedUserGroups);
+      for (UserClass user in tempUsersModified) {
+        if (!tempUsersSource.contains(user)) {
+          UserGroupClass test = userGroups.firstWhere((UserGroupClass group) => group.userId == user.id);
+          await _userGroupBookingDatabase.createUserGroupBooking(oldBooking.id, test);
+          await _userGroupDatabase.updateUserGroup(test, test.id, test.groupId, costPerBooking);
+        }
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
       }
     } finally {
       if (mounted) {
-        cleanFields();
+        cleanFields(true);
       }
     }
   }
@@ -309,7 +336,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
       }
     } finally {
       if (mounted) {
-        cleanFields();
+        cleanFields(true);
       }
     }
   }
@@ -323,7 +350,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: ElevatedButton(
-                    onPressed: cleanFields,
+                    onPressed: () => cleanFields(false),
                     child: const Text("Abbrechen"),
                   ),
                 ),

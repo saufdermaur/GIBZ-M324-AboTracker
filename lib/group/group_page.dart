@@ -33,7 +33,7 @@ class _GroupPageState extends State<GroupPage> {
     getUsers();
   }
 
-  void cleanFields() {
+  void cleanFields(bool fetchUsers) {
     Navigator.pop(context);
 
     _nameController.clear();
@@ -41,7 +41,9 @@ class _GroupPageState extends State<GroupPage> {
     _totalCostController.clear();
     _selectedUsers.clear();
 
-    getUsers();
+    if (fetchUsers) {
+      getUsers();
+    }
   }
 
   void createGroup() async {
@@ -56,7 +58,7 @@ class _GroupPageState extends State<GroupPage> {
       }
     } finally {
       if (mounted) {
-        cleanFields();
+        cleanFields(true);
       }
     }
   }
@@ -144,7 +146,7 @@ class _GroupPageState extends State<GroupPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: ElevatedButton(
-                    onPressed: cleanFields,
+                    onPressed: () => cleanFields(false),
                     child: const Text("Abbrechen"),
                   ),
                 ),
@@ -187,7 +189,7 @@ class _GroupPageState extends State<GroupPage> {
       }
     } finally {
       if (mounted) {
-        cleanFields();
+        cleanFields(true);
       }
     }
   }
@@ -270,7 +272,7 @@ class _GroupPageState extends State<GroupPage> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     child: ElevatedButton(
-                      onPressed: cleanFields,
+                      onPressed: () => cleanFields(false),
                       child: const Text("Abbrechen"),
                     ),
                   ),
@@ -298,7 +300,7 @@ class _GroupPageState extends State<GroupPage> {
       }
     } finally {
       if (mounted) {
-        cleanFields();
+        cleanFields(true);
       }
     }
   }
@@ -312,7 +314,7 @@ class _GroupPageState extends State<GroupPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: ElevatedButton(
-                    onPressed: cleanFields,
+                    onPressed: () => cleanFields(false),
                     child: const Text("Abbrechen"),
                   ),
                 ),

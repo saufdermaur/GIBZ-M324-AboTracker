@@ -1,4 +1,4 @@
-# Squash-Tracker
+# Abo-Tracker
 
 ## Beschreibung
 Für die Nachverfolgung und korrekte Abrechnung von Reservierungen eines Squash-Platzes soll primär eine Webapplikation entwickelt werden. Diese soll das Erfassen von Buchungen mit den anwesenden Personen ermöglichen. Zusätzlich sollen Statistiken ausgewertet werden, beispielsweise:

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:squash_tracker/auth/auth_service.dart';
-import 'package:squash_tracker/auth/register_page.dart';
+import 'package:abo_tracker/auth/auth_service.dart';
+import 'package:abo_tracker/auth/register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Login"),
+        title: const Text("Anmelden"),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 50),
@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
             padding: const EdgeInsets.all(10),
             child: TextField(
               controller: _passwordController,
-              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Password"),
+              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Passwort"),
               obscureText: true,
             ),
           ),
@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
             padding: const EdgeInsets.all(10),
             child: ElevatedButton(
               onPressed: login,
-              child: const Text("Login"),
+              child: const Text("Anmelden"),
             ),
           ),
           const SizedBox(
@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
           GestureDetector(
             onTap: () => Navigator.push(context, MaterialPageRoute<RegisterPage>(builder: (BuildContext context) => const RegisterPage())),
             child: Center(
-              child: const Text("Don't have an account? Sign up"),
+              child: const Text("Noch keinen Account? Registrieren"),
             ),
           )
         ],

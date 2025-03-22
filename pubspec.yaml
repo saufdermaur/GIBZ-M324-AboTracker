@@ -1,5 +1,5 @@
-name: squash_tracker
-description: A Squash-Tracker-App.
+name: abo_tracker
+description: A Abo-Tracker-App.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -17,6 +17,7 @@ dependencies:
   supabase_auth_ui: ^0.5.4
   flutter_dotenv: ^5.2.1
   supabase_flutter: ^2.8.4
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

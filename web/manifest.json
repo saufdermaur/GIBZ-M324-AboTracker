@@ -1,6 +1,6 @@
 {
-    "name": "squash_tracker",
-    "short_name": "squash_tracker",
+    "name": "abo_tracker",
+    "short_name": "abo_tracker",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

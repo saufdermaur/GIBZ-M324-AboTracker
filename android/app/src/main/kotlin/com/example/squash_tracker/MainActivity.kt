@@ -1,4 +1,4 @@
-package com.example.squash_tracker
+package com.example.abo_tracker
 
 import io.flutter.embedding.android.FlutterActivity
 

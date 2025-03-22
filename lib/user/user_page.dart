@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:squash_tracker/user/user_class.dart';
-import 'package:squash_tracker/user/user_service.dart';
+import 'package:abo_tracker/user/user_class.dart';
+import 'package:abo_tracker/user/user_service.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});

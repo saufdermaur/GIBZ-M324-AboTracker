@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:squash_tracker/group/group_class.dart';
-import 'package:squash_tracker/group/group_service.dart';
-import 'package:squash_tracker/user/user_class.dart';
-import 'package:squash_tracker/user/user_service.dart';
-import 'package:squash_tracker/user_group/user_group_class.dart';
-import 'package:squash_tracker/user_group/user_group_service.dart';
+import 'package:abo_tracker/group/group_class.dart';
+import 'package:abo_tracker/group/group_service.dart';
+import 'package:abo_tracker/user/user_class.dart';
+import 'package:abo_tracker/user/user_service.dart';
+import 'package:abo_tracker/user_group/user_group_class.dart';
+import 'package:abo_tracker/user_group/user_group_service.dart';
 
 class GroupPage extends StatefulWidget {
   const GroupPage({super.key});
@@ -33,7 +33,7 @@ class _GroupPageState extends State<GroupPage> {
     getUsers();
   }
 
-  void cleanFields() {
+  void cleanFields(bool fetchUsers) {
     Navigator.pop(context);
 
     _nameController.clear();
@@ -41,22 +41,24 @@ class _GroupPageState extends State<GroupPage> {
     _totalCostController.clear();
     _selectedUsers.clear();
 
-    getUsers();
+    if (fetchUsers) {
+      getUsers();
+    }
   }
 
   void createGroup() async {
     final GroupClass newGroup = GroupClass(
-        totalCost: int.parse(_totalCostController.text), costPerBooking: int.parse(_costPerBookingController.text), name: _nameController.text);
+        totalCost: int.parse(_totalCostController.text), availableUnits: int.parse(_costPerBookingController.text), name: _nameController.text);
     try {
       GroupClass group = await _groupDatabase.createGroup(newGroup);
       await _userGroupDatabase.createUserGroup(group.id, _selectedUsers);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
       }
     } finally {
       if (mounted) {
-        cleanFields();
+        cleanFields(true);
       }
     }
   }
@@ -73,7 +75,7 @@ class _GroupPageState extends State<GroupPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
       }
     }
   }
@@ -85,7 +87,7 @@ class _GroupPageState extends State<GroupPage> {
         return StatefulBuilder(
           builder: (BuildContext context, void Function(void Function()) setDialogState) {
             return AlertDialog(
-              title: const Text("New Group"),
+              title: const Text("Neue Gruppe"),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -110,29 +112,30 @@ class _GroupPageState extends State<GroupPage> {
                       padding: const EdgeInsets.all(10),
                       child: TextField(
                         controller: _costPerBookingController,
-                        decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Preis pro Mal"),
+                        decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Verfügbare Einheiten"),
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                       ),
                     ),
-                    Wrap(
-                      spacing: 5.0,
-                      runSpacing: 5.0,
+                    Column(
                       children: users.map((UserClass user) {
-                        return ChoiceChip(
-                          label: Text(user.nickname),
-                          selected: _selectedUsers.contains(user),
-                          onSelected: (bool selected) {
-                            setDialogState(() {
-                              if (selected) {
-                                if (!_selectedUsers.any((UserClass u) => u.id == user.id)) {
-                                  _selectedUsers.add(user);
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2.0),
+                          child: ChoiceChip(
+                            label: Text(user.nickname),
+                            selected: _selectedUsers.contains(user),
+                            onSelected: (bool selected) {
+                              setDialogState(() {
+                                if (selected) {
+                                  if (!_selectedUsers.any((UserClass u) => u.id == user.id)) {
+                                    _selectedUsers.add(user);
+                                  }
+                                } else {
+                                  _selectedUsers.removeWhere((UserClass u) => u.id == user.id);
                                 }
-                              } else {
-                                _selectedUsers.removeWhere((UserClass u) => u.id == user.id);
-                              }
-                            });
-                          },
+                              });
+                            },
+                          ),
                         );
                       }).toList(),
                     )
@@ -143,7 +146,7 @@ class _GroupPageState extends State<GroupPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: ElevatedButton(
-                    onPressed: cleanFields,
+                    onPressed: () => cleanFields(false),
                     child: const Text("Abbrechen"),
                   ),
                 ),
@@ -164,10 +167,10 @@ class _GroupPageState extends State<GroupPage> {
 
   void changeGroup(GroupClass oldGroup, List<UserClass> tempUsersSource, List<UserClass> tempUsersModified) async {
     final int totalCost = int.parse(_totalCostController.text);
-    final int costPerBooking = int.parse(_costPerBookingController.text);
+    final int availableUnits = int.parse(_costPerBookingController.text);
 
     try {
-      await _groupDatabase.updateGroup(oldGroup, _nameController.text, totalCost, costPerBooking);
+      await _groupDatabase.updateGroup(oldGroup, _nameController.text, totalCost, availableUnits);
 
       for (UserClass user in tempUsersSource) {
         if (!tempUsersModified.contains(user)) {
@@ -182,18 +185,18 @@ class _GroupPageState extends State<GroupPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
       }
     } finally {
       if (mounted) {
-        cleanFields();
+        cleanFields(true);
       }
     }
   }
 
   void updateGroup(GroupClass group) {
     _nameController.text = group.name;
-    _costPerBookingController.text = group.costPerBooking.toString();
+    _costPerBookingController.text = group.availableUnits.toString();
     _totalCostController.text = group.totalCost.toString();
     List<UserClass> tempUsersSource = userGroups
         .where((UserGroupClass userGroup) => userGroup.groupId == group.id)
@@ -210,7 +213,7 @@ class _GroupPageState extends State<GroupPage> {
           return StatefulBuilder(
             builder: (BuildContext context, void Function(void Function()) setDialogState) {
               return AlertDialog(
-                title: const Text("Edit Group"),
+                title: const Text("Gruppe bearbeiten"),
                 content: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -235,29 +238,30 @@ class _GroupPageState extends State<GroupPage> {
                         padding: const EdgeInsets.all(10),
                         child: TextField(
                           controller: _costPerBookingController,
-                          decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Preis pro Mal"),
+                          decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Verfügbare Einheiten"),
                           keyboardType: TextInputType.number,
                           inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                         ),
                       ),
-                      Wrap(
-                        spacing: 5.0,
-                        runSpacing: 5.0,
+                      Column(
                         children: users.map((UserClass user) {
-                          return ChoiceChip(
-                            label: Text(user.nickname),
-                            selected: tempUsersModified.contains(user),
-                            onSelected: (bool selected) {
-                              setDialogState(() {
-                                if (selected) {
-                                  if (!tempUsersModified.any((UserClass u) => u.id == user.id)) {
-                                    tempUsersModified.add(user);
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2.0),
+                            child: ChoiceChip(
+                              label: Text(user.nickname),
+                              selected: tempUsersModified.contains(user),
+                              onSelected: (bool selected) {
+                                setDialogState(() {
+                                  if (selected) {
+                                    if (!tempUsersModified.any((UserClass u) => u.id == user.id)) {
+                                      tempUsersModified.add(user);
+                                    }
+                                  } else {
+                                    tempUsersModified.removeWhere((UserClass u) => u.id == user.id);
                                   }
-                                } else {
-                                  tempUsersModified.removeWhere((UserClass u) => u.id == user.id);
-                                }
-                              });
-                            },
+                                });
+                              },
+                            ),
                           );
                         }).toList(),
                       )
@@ -268,7 +272,7 @@ class _GroupPageState extends State<GroupPage> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     child: ElevatedButton(
-                      onPressed: cleanFields,
+                      onPressed: () => cleanFields(false),
                       child: const Text("Abbrechen"),
                     ),
                   ),
@@ -292,11 +296,11 @@ class _GroupPageState extends State<GroupPage> {
       if (mounted) {}
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
       }
     } finally {
       if (mounted) {
-        cleanFields();
+        cleanFields(true);
       }
     }
   }
@@ -305,12 +309,12 @@ class _GroupPageState extends State<GroupPage> {
     showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-              title: const Text("Delete Group"),
+              title: const Text("Gruppe löschen"),
               actions: <Widget>[
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: ElevatedButton(
-                    onPressed: cleanFields,
+                    onPressed: () => cleanFields(false),
                     child: const Text("Abbrechen"),
                   ),
                 ),
@@ -353,10 +357,10 @@ class _GroupPageState extends State<GroupPage> {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('Total Cost: \$${group.totalCost}'),
-                        Text('Cost per Booking: \$${group.costPerBooking}'),
+                        Text('Gesamtkosten: ${group.totalCost}.-'),
+                        Text('Total verfügbare Einheiten: ${group.availableUnits}'),
                         Text(
-                            "Users: ${userGroups.where((UserGroupClass userGroup) => userGroup.groupId == group.id).map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId).nickname).join(', ')}")
+                            "Benutzer: ${userGroups.where((UserGroupClass userGroup) => userGroup.groupId == group.id).map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId).nickname).join(', ')}")
                       ],
                     ),
                     trailing: SizedBox(

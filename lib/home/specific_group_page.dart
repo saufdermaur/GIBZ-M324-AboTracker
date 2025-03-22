@@ -11,7 +11,7 @@ import 'package:squash_tracker/user_group_booking/user_group_booking_service.dar
 class SpecificGroupPage extends StatefulWidget {
   final UserGroupClass userGroupClass;
   final int totalCost;
-  final int costPerBooking;
+  final double costPerBooking;
 
   SpecificGroupPage({super.key, required this.userGroupClass, required this.totalCost, required this.costPerBooking});
 
@@ -22,7 +22,7 @@ class SpecificGroupPage extends StatefulWidget {
 class _SpecificGroupPageState extends State<SpecificGroupPage> {
   late final UserGroupClass userGroupClass;
   late final int totalCost;
-  late final int costPerBooking;
+  late final double costPerBooking;
 
   final TextEditingController _dateController = TextEditingController();
 
@@ -180,6 +180,45 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     }
   }
 
+  void deleteGroupFunction(UserGroupBooking userGroupBooking) async {
+    try {
+      await _userGroupBookingDatabase.deleteUserGroupBooking(userGroupBooking);
+      if (mounted) {}
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+      }
+    } finally {
+      if (mounted) {
+        cleanFields();
+      }
+    }
+  }
+
+  void deleteGroup(UserGroupBooking userGroupBooking) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: const Text("Delete Group"),
+              actions: <Widget>[
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: cleanFields,
+                    child: const Text("Abbrechen"),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: () => deleteGroupFunction(userGroupBooking),
+                    child: const Text("Löschen"),
+                  ),
+                ),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
     List<UserGroupBooking> userGroupBookings = <UserGroupBooking>[];
@@ -213,6 +252,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
           });
 
           int intermediateCost = totalCost;
+          int timesToPlay = (totalCost / costPerBooking).floor();
 
           return Stack(
             children: <Widget>[
@@ -232,6 +272,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                   }).toList();
 
                   intermediateCost -= 25;
+                  timesToPlay -= 1;
 
                   return Card(
                       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -252,7 +293,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
                                       Text("Saldo: $intermediateCost"),
-                                      Text("Verbleibend: ${(intermediateCost / costPerBooking).toStringAsFixed(2)}"),
+                                      Text("Verbleibend: ${(timesToPlay).toStringAsFixed(2)}"),
                                     ],
                                   ),
                                 ),
@@ -262,7 +303,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                                 icon: Icon(Icons.edit),
                               ),
                               IconButton(
-                                onPressed: () => () {},
+                                onPressed: () => deleteGroup(userGroupBookings[index]),
                                 icon: Icon(Icons.delete),
                               ),
                             ],

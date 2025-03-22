@@ -46,7 +46,7 @@ class _GroupPageState extends State<GroupPage> {
 
   void createGroup() async {
     final GroupClass newGroup = GroupClass(
-        totalCost: int.parse(_totalCostController.text), costPerBooking: int.parse(_costPerBookingController.text), name: _nameController.text);
+        totalCost: int.parse(_totalCostController.text), costPerBooking: double.parse(_costPerBookingController.text), name: _nameController.text);
     try {
       GroupClass group = await _groupDatabase.createGroup(newGroup);
       await _userGroupDatabase.createUserGroup(group.id, _selectedUsers);
@@ -165,7 +165,7 @@ class _GroupPageState extends State<GroupPage> {
 
   void changeGroup(GroupClass oldGroup, List<UserClass> tempUsersSource, List<UserClass> tempUsersModified) async {
     final int totalCost = int.parse(_totalCostController.text);
-    final int costPerBooking = int.parse(_costPerBookingController.text);
+    final double costPerBooking = double.parse(_costPerBookingController.text);
 
     try {
       await _groupDatabase.updateGroup(oldGroup, _nameController.text, totalCost, costPerBooking);
@@ -232,15 +232,15 @@ class _GroupPageState extends State<GroupPage> {
                           inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                         ),
                       ),
-                      Container(
+                        Container(
                         padding: const EdgeInsets.all(10),
                         child: TextField(
                           controller: _costPerBookingController,
                           decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Preis pro Mal"),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                          keyboardType: TextInputType.numberWithOptions(decimal: true),
+                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,8}'))],
                         ),
-                      ),
+                        ),
                       Column(
                         children: users.map((UserClass user) {
                           return Padding(

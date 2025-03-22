@@ -15,7 +15,7 @@ class GroupService {
       (SupabaseStreamEvent data) => data.map((Map<String, dynamic> groupMap) => GroupClass.fromMap(groupMap)).toList());
 
   // Update
-  Future<void> updateGroup(GroupClass oldGroup, String name, int totalCost, int costPerBooking) async {
+  Future<void> updateGroup(GroupClass oldGroup, String name, int totalCost, double costPerBooking) async {
     await _supabaseClient.update(<String, dynamic>{"name": name, "total_cost": totalCost, "cost_per_booking": costPerBooking}).eq("id", oldGroup.id);
   }
 

@@ -46,7 +46,7 @@ class _GroupPageState extends State<GroupPage> {
 
   void createGroup() async {
     final GroupClass newGroup = GroupClass(
-        totalCost: int.parse(_totalCostController.text), costPerBooking: int.parse(_costPerBookingController.text), name: _nameController.text);
+        totalCost: int.parse(_totalCostController.text), availableUnits: int.parse(_costPerBookingController.text), name: _nameController.text);
     try {
       GroupClass group = await _groupDatabase.createGroup(newGroup);
       await _userGroupDatabase.createUserGroup(group.id, _selectedUsers);
@@ -110,7 +110,7 @@ class _GroupPageState extends State<GroupPage> {
                       padding: const EdgeInsets.all(10),
                       child: TextField(
                         controller: _costPerBookingController,
-                        decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Preis pro Mal"),
+                        decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Verfügbare Einheiten"),
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                       ),
@@ -165,10 +165,10 @@ class _GroupPageState extends State<GroupPage> {
 
   void changeGroup(GroupClass oldGroup, List<UserClass> tempUsersSource, List<UserClass> tempUsersModified) async {
     final int totalCost = int.parse(_totalCostController.text);
-    final int costPerBooking = int.parse(_costPerBookingController.text);
+    final int availableUnits = int.parse(_costPerBookingController.text);
 
     try {
-      await _groupDatabase.updateGroup(oldGroup, _nameController.text, totalCost, costPerBooking);
+      await _groupDatabase.updateGroup(oldGroup, _nameController.text, totalCost, availableUnits);
 
       for (UserClass user in tempUsersSource) {
         if (!tempUsersModified.contains(user)) {
@@ -194,7 +194,7 @@ class _GroupPageState extends State<GroupPage> {
 
   void updateGroup(GroupClass group) {
     _nameController.text = group.name;
-    _costPerBookingController.text = group.costPerBooking.toString();
+    _costPerBookingController.text = group.availableUnits.toString();
     _totalCostController.text = group.totalCost.toString();
     List<UserClass> tempUsersSource = userGroups
         .where((UserGroupClass userGroup) => userGroup.groupId == group.id)
@@ -236,7 +236,7 @@ class _GroupPageState extends State<GroupPage> {
                         padding: const EdgeInsets.all(10),
                         child: TextField(
                           controller: _costPerBookingController,
-                          decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Preis pro Mal"),
+                          decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Verfügbare Einheiten"),
                           keyboardType: TextInputType.number,
                           inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                         ),
@@ -356,7 +356,7 @@ class _GroupPageState extends State<GroupPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text('Total Cost: \$${group.totalCost}'),
-                        Text('Cost per Booking: \$${group.costPerBooking}'),
+                        Text('Total verfügbare Einheiten: ${group.availableUnits}'),
                         Text(
                             "Users: ${userGroups.where((UserGroupClass userGroup) => userGroup.groupId == group.id).map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId).nickname).join(', ')}")
                       ],

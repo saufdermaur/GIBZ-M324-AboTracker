@@ -11,9 +11,9 @@ import 'package:squash_tracker/user_group_booking/user_group_booking_service.dar
 class SpecificGroupPage extends StatefulWidget {
   final UserGroupClass userGroupClass;
   final int totalCost;
-  final int costPerBooking;
+  final int availableUnits;
 
-  SpecificGroupPage({super.key, required this.userGroupClass, required this.totalCost, required this.costPerBooking});
+  SpecificGroupPage({super.key, required this.userGroupClass, required this.totalCost, required this.availableUnits});
 
   @override
   State<SpecificGroupPage> createState() => _SpecificGroupPageState();
@@ -22,7 +22,7 @@ class SpecificGroupPage extends StatefulWidget {
 class _SpecificGroupPageState extends State<SpecificGroupPage> {
   late final UserGroupClass userGroupClass;
   late final int totalCost;
-  late final int costPerBooking;
+  late final int availableUnits;
 
   final TextEditingController _dateController = TextEditingController();
 
@@ -41,7 +41,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     super.initState();
     userGroupClass = widget.userGroupClass;
     totalCost = widget.totalCost;
-    costPerBooking = widget.costPerBooking;
+    availableUnits = widget.availableUnits;
     getUsers();
   }
 
@@ -213,6 +213,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
           });
 
           int intermediateCost = totalCost;
+          int intermediateAvailableUnits = availableUnits;
 
           return Stack(
             children: <Widget>[
@@ -232,6 +233,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                   }).toList();
 
                   intermediateCost -= 25;
+                  intermediateAvailableUnits -= 1;
 
                   return Card(
                       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -252,7 +254,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
                                       Text("Saldo: $intermediateCost"),
-                                      Text("Verbleibend: ${(intermediateCost / costPerBooking).toStringAsFixed(2)}"),
+                                      Text("Verbleibend: $intermediateAvailableUnits"),
                                     ],
                                   ),
                                 ),

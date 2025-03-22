@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text('Total Cost: \$${group.totalCost}'),
-                        Text('Cost per Booking: \$${group.costPerBooking}'),
+                        Text('Total verfügbare Einheiten: ${group.availableUnits}'),
                         Text(
                             "Users: ${userGroups.where((UserGroupClass userGroup) => userGroup.groupId == group.id).map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId).nickname).join(', ')}")
                       ],
@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
                                   builder: (BuildContext context) => SpecificGroupPage(
                                     userGroupClass: userGroups.firstWhere((UserGroupClass userGroup) => userGroup.groupId == group.id),
                                     totalCost: group.totalCost!,
-                                    costPerBooking: group.costPerBooking!,
+                                    availableUnits: group.availableUnits!,
                                   ),
                                 ),
                               );

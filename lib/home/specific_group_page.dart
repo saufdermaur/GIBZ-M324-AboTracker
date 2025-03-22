@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:squash_tracker/booking/booking_class.dart';
 import 'package:squash_tracker/booking/booking_service.dart';
 import 'package:squash_tracker/user/user_class.dart';
-import 'package:squash_tracker/user/user_service.dart';
 import 'package:squash_tracker/user_group/user_group_class.dart';
 import 'package:squash_tracker/user_group/user_group_service.dart';
 import 'package:squash_tracker/user_group_booking/user_group_booking_class.dart';
@@ -10,10 +9,11 @@ import 'package:squash_tracker/user_group_booking/user_group_booking_service.dar
 
 class SpecificGroupPage extends StatefulWidget {
   final UserGroupClass userGroupClass;
+  final List<UserClass> usersClass;
   final int totalCost;
   final int availableUnits;
 
-  SpecificGroupPage({super.key, required this.userGroupClass, required this.totalCost, required this.availableUnits});
+  SpecificGroupPage({super.key, required this.userGroupClass, required this.usersClass, required this.totalCost, required this.availableUnits});
 
   @override
   State<SpecificGroupPage> createState() => _SpecificGroupPageState();
@@ -21,25 +21,26 @@ class SpecificGroupPage extends StatefulWidget {
 
 class _SpecificGroupPageState extends State<SpecificGroupPage> {
   late final UserGroupClass userGroupClass;
+  late final List<UserClass> usersClass;
   late final int totalCost;
   late final int availableUnits;
 
   final TextEditingController _dateController = TextEditingController();
 
   final List<UserClass> _selectedUsers = <UserClass>[];
-  final UserService _userDatabase = UserService();
   final UserGroupService _userGroupDatabase = UserGroupService();
   final UserGroupBookingService _userGroupBookingDatabase = UserGroupBookingService();
   final BookingService _bookingDatabase = BookingService();
 
-  List<UserClass> users = <UserClass>[];
   List<UserGroupClass> userGroups = <UserGroupClass>[];
   List<BookingClass> bookings = <BookingClass>[];
+  List<UserGroupBooking> userGroupBookings = <UserGroupBooking>[];
 
   @override
   void initState() {
     super.initState();
     userGroupClass = widget.userGroupClass;
+    usersClass = widget.usersClass;
     totalCost = widget.totalCost;
     availableUnits = widget.availableUnits;
     getUsers();
@@ -56,15 +57,11 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
 
   Future<void> getUsers() async {
     try {
-      _dateController.text = DateTime.now().toLocal().toString().split(' ')[0];
-
-      final List<UserClass> fetchedUsers = await _userDatabase.getUsers();
       final List<UserGroupClass> fetchedUserGroups = await _userGroupDatabase.getUserGroupGroupId(userGroupClass.groupId);
       final List<BookingClass> fetchedBookings = await _bookingDatabase.getBookings();
-
+      
       if (mounted) {
         setState(() {
-          users = fetchedUsers;
           userGroups = fetchedUserGroups;
           bookings = fetchedBookings;
         });
@@ -77,6 +74,8 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
   }
 
   void addNewBooking() {
+    _dateController.text = DateTime.now().toLocal().toString().split(' ')[0];
+
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -112,7 +111,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                             },
                           )),
                       Column(
-                        children: users.map((UserClass user) {
+                        children: usersClass.map((UserClass user) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 2.0),
                             child: ChoiceChip(
@@ -180,10 +179,153 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     }
   }
 
+  void updateNewBooking(BookingClass booking) {
+    _dateController.text = booking.time.toString().split(' ')[0];
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (BuildContext context, void Function(void Function()) setDialogState) {
+              return AlertDialog(
+                title: const Text("Update Booking"),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Container(
+                          padding: const EdgeInsets.all(10),
+                          child: TextField(
+                            controller: _dateController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: "Datum",
+                            ),
+                            readOnly: true,
+                            onTap: () async {
+                              DateTime? pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: booking.time,
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2101),
+                              );
+                              if (pickedDate != null) {
+                                setState(() {
+                                  _dateController.text = pickedDate.toLocal().toString().split(' ')[0];
+                                });
+                              }
+                            },
+                          )),
+                      Column(
+                        children: usersClass.map((UserClass user) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2.0),
+                            child: ChoiceChip(
+                              label: Text(user.nickname),
+                              selected: _selectedUsers.contains(user),
+                              onSelected: (bool selected) {
+                                setDialogState(() {
+                                  if (selected) {
+                                    if (!_selectedUsers.any((UserClass u) => u.id == user.id)) {
+                                      _selectedUsers.add(user);
+                                    }
+                                  } else {
+                                    _selectedUsers.removeWhere((UserClass u) => u.id == user.id);
+                                  }
+                                });
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      )
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: ElevatedButton(
+                      onPressed: cleanFields,
+                      child: const Text("Abbrechen"),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: ElevatedButton(
+                      onPressed: createBooking,
+                      child: const Text("Erstellen"),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        });
+  }
+
+  void updateBooking() async {
+    final BookingClass newBooking = BookingClass(time: DateTime.parse(_dateController.text));
+
+    try {
+      BookingClass booking = await _bookingDatabase.createBooking(newBooking);
+
+      final List<UserGroupClass> mappedUserGroups = _selectedUsers.expand((UserClass user) {
+        return userGroups.where((UserGroupClass group) => group.userId == user.id).toList();
+      }).toList();
+
+      await _userGroupBookingDatabase.createUserGroupBooking(booking.id, mappedUserGroups);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+      }
+    } finally {
+      if (mounted) {
+        cleanFields();
+      }
+    }
+  }
+
+  void deleteGroupFunction(BookingClass booking) async {
+    try {
+      await _bookingDatabase.deleteBooking(booking); // is enough because we cascade
+      if (mounted) {}
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+      }
+    } finally {
+      if (mounted) {
+        cleanFields();
+      }
+    }
+  }
+
+  void deleteGroup(BookingClass booking) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: const Text("Delete Group"),
+              actions: <Widget>[
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: cleanFields,
+                    child: const Text("Abbrechen"),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: () => deleteGroupFunction(booking),
+                    child: const Text("Löschen"),
+                  ),
+                ),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<UserGroupBooking> userGroupBookings = <UserGroupBooking>[];
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Specific Group'),
@@ -197,20 +339,28 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
       body: StreamBuilder<List<UserGroupBooking>>(
         stream: _userGroupBookingDatabase.stream,
         builder: (BuildContext context, AsyncSnapshot<List<UserGroupBooking>> snapshot) {
-          if (!snapshot.hasData || bookings.isEmpty) {
-            return const Center(
+          if (!snapshot.hasData || usersClass.isEmpty || userGroups.isEmpty) {
+            return Center(
               child: CircularProgressIndicator(),
             );
           }
 
           userGroupBookings = snapshot.data!;
-          final List<String> uniqueBookingIds = userGroupBookings.map((UserGroupBooking e) => e.bookingId).toSet().toList();
 
-          uniqueBookingIds.sort((String a, String b) {
-            final DateTime timeA = bookings.firstWhere((BookingClass booking) => booking.id == a).time;
-            final DateTime timeB = bookings.firstWhere((BookingClass booking) => booking.id == b).time;
-            return timeA.compareTo(timeB);
-          });
+          if (userGroupBookings.isEmpty) {
+            return Center(
+              child: Positioned(
+                bottom: 16,
+                right: 16,
+                child: FloatingActionButton(
+                  onPressed: addNewBooking,
+                  child: Icon(Icons.add),
+                ),
+              ),
+            );
+          }
+
+          final List<String> uniqueBookingIds = userGroupBookings.map((UserGroupBooking e) => e.bookingId).toSet().toList();
 
           int intermediateCost = totalCost;
           int intermediateAvailableUnits = availableUnits;
@@ -228,7 +378,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                       .map((UserGroupBooking userGroupBooking) {
                     final UserGroupClass userGroup =
                         userGroups.firstWhere((UserGroupClass userGroup) => userGroup.id == userGroupBooking.userGroupId);
-                    final UserClass user = users.firstWhere((UserClass user) => user.id == userGroup.userId);
+                    final UserClass user = usersClass.firstWhere((UserClass user) => user.id == userGroup.userId);
                     return user.nickname;
                   }).toList();
 
@@ -260,11 +410,11 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                                 ),
                               ),
                               IconButton(
-                                onPressed: () => () {},
+                                onPressed: () => updateNewBooking(bookings[index]),
                                 icon: Icon(Icons.edit),
                               ),
                               IconButton(
-                                onPressed: () => () {},
+                                onPressed: () => deleteGroup(bookings[index]),
                                 icon: Icon(Icons.delete),
                               ),
                             ],

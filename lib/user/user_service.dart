@@ -1,5 +1,5 @@
-import 'package:abo_tracker/user/user_class.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import "package:abo_tracker/user/user_class.dart";
+import "package:supabase_flutter/supabase_flutter.dart";
 
 class UserService {
   final SupabaseQueryBuilder _supabaseClient = Supabase.instance.client.from("users");

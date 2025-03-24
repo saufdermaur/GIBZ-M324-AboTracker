@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:abo_tracker/booking/booking_class.dart';
-import 'package:abo_tracker/booking/booking_service.dart';
-import 'package:abo_tracker/user/user_class.dart';
-import 'package:abo_tracker/user_group/user_group_class.dart';
-import 'package:abo_tracker/user_group/user_group_service.dart';
-import 'package:abo_tracker/user_group_booking/user_group_booking_class.dart';
-import 'package:abo_tracker/user_group_booking/user_group_booking_service.dart';
+import "package:flutter/material.dart";
+import "package:abo_tracker/booking/booking_class.dart";
+import "package:abo_tracker/booking/booking_service.dart";
+import "package:abo_tracker/user/user_class.dart";
+import "package:abo_tracker/user_group/user_group_class.dart";
+import "package:abo_tracker/user_group/user_group_service.dart";
+import "package:abo_tracker/user_group_booking/user_group_booking_class.dart";
+import "package:abo_tracker/user_group_booking/user_group_booking_service.dart";
 
 class SpecificGroupPage extends StatefulWidget {
   final UserGroupClass userGroupClass;
@@ -85,7 +85,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
   }
 
   void addNewBooking() {
-    _dateController.text = DateTime.now().toLocal().toString().split(' ')[0];
+    _dateController.text = DateTime.now().toLocal().toString().split(" ")[0];
 
     showDialog(
         context: context,
@@ -116,7 +116,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                               );
                               if (pickedDate != null) {
                                 setState(() {
-                                  _dateController.text = pickedDate.toLocal().toString().split(' ')[0];
+                                  _dateController.text = pickedDate.toLocal().toString().split(" ")[0];
                                 });
                               }
                             },
@@ -192,7 +192,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
   }
 
   void updateNewBooking(BookingClass booking) {
-    _dateController.text = booking.time.toString().split(' ')[0];
+    _dateController.text = booking.time.toString().split(" ")[0];
 
     List<UserClass> test = userGroupBookings
         .where((UserGroupBooking userGroupBooking) => userGroupBooking.bookingId == booking.id)
@@ -233,7 +233,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                               );
                               if (pickedDate != null) {
                                 setState(() {
-                                  _dateController.text = pickedDate.toLocal().toString().split(' ')[0];
+                                  _dateController.text = pickedDate.toLocal().toString().split(" ")[0];
                                 });
                               }
                             },

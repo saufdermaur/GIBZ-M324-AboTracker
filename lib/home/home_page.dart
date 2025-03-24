@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:abo_tracker/group/group_class.dart';
-import 'package:abo_tracker/group/group_service.dart';
-import 'package:abo_tracker/home/specific_group_page.dart';
-import 'package:abo_tracker/user/user_class.dart';
-import 'package:abo_tracker/user/user_service.dart';
-import 'package:abo_tracker/user_group/user_group_class.dart';
-import 'package:abo_tracker/user_group/user_group_service.dart';
+import "package:flutter/material.dart";
+import "package:abo_tracker/group/group_class.dart";
+import "package:abo_tracker/group/group_service.dart";
+import "package:abo_tracker/home/specific_group_page.dart";
+import "package:abo_tracker/user/user_class.dart";
+import "package:abo_tracker/user/user_service.dart";
+import "package:abo_tracker/user_group/user_group_class.dart";
+import "package:abo_tracker/user_group/user_group_service.dart";
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -95,8 +95,8 @@ class _HomePageState extends State<HomePage> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Gesamtkosten: ${group.totalCost}.-'),
-                          Text('Total verfügbare Einheiten: ${group.availableUnits}'),
+                          Text("Gesamtkosten: ${group.totalCost}.-"),
+                          Text("Total verfügbare Einheiten: ${group.availableUnits}"),
                           Text(
                               "Benutzer: ${userGroups.where((UserGroupClass userGroup) => userGroup.groupId == group.id).map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId).nickname).join(', ')}")
                         ],

@@ -1,6 +1,6 @@
-import 'package:abo_tracker/user/user_class.dart';
-import 'package:abo_tracker/user_group/user_group_class.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import "package:abo_tracker/user/user_class.dart";
+import "package:abo_tracker/user_group/user_group_class.dart";
+import "package:supabase_flutter/supabase_flutter.dart";
 
 class UserGroupService {
   final SupabaseQueryBuilder _supabaseClient = Supabase.instance.client.from("users_groups");

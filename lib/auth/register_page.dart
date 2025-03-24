@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:abo_tracker/auth/auth_service.dart';
+import "package:flutter/material.dart";
+import "package:abo_tracker/auth/auth_service.dart";
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

@@ -2,7 +2,7 @@
 .default_flutter: &default_flutter
   image: ghcr.io/cirruslabs/flutter:stable
 .default_node: &default_node
-  image: node:16.16.0
+  image: node:22.x
 
 # Cache for builds
 cache:

@@ -1,18 +1,27 @@
-#Cache for builds
+# Set YAML anchors as const variables
+.default_flutter:
+  image: ghcr.io/cirruslabs/flutter:stable
+.default_node:
+  image: node:16.16.0
+
+# Cache for builds
 cache:
   key: "$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
   paths:
     - .pub-cache
+    - .dart_tool/
   policy: pull-push
 
+# Define stages
 stages:
   - test
   - build
   - deploy
 
+# Flutter install necessary dependencies
 dependencies_install:
   stage: test
-  image: ghcr.io/cirruslabs/flutter:stable
+  <<: *default_flutter
   script:
     - flutter pub get
   cache:
@@ -23,7 +32,7 @@ dependencies_install:
 # Flutter Analyze Job
 flutter_analyze:
   stage: test
-  image: ghcr.io/cirruslabs/flutter:stable
+  <<: *default_flutter
   dependencies:
     - dependencies_install
   script:
@@ -32,11 +41,11 @@ flutter_analyze:
 # Flutter Test
 flutter_test:
   stage: test
-  image: ghcr.io/cirruslabs/flutter:stable
+  <<: *default_flutter
   dependencies:
     - dependencies_install
   script:
-    - flutter test
+    - flutter test --machine > test-report.json
   artifacts:
     paths:
       - test-report.json
@@ -45,7 +54,7 @@ flutter_test:
 # Web Build
 build_web_app:
   stage: build
-  image: ghcr.io/cirruslabs/flutter:stable
+  <<: *default_flutter
   script:
     - flutter build web --base-href "/" --dart-define="SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" --dart-define="SUPABASE_URL=${SUPABASE_URL}"
   artifacts:
@@ -56,7 +65,7 @@ build_web_app:
 # Android Build
 build_android_app:
   stage: build
-  image: ghcr.io/cirruslabs/flutter:stable
+  <<: *default_flutter
   script:
     - flutter build apk --dart-define="SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" --dart-define="SUPABASE_URL=${SUPABASE_URL}"
   artifacts:
@@ -67,7 +76,7 @@ build_android_app:
 # Deploy Preview for Web
 deploy_preview:
   stage: deploy
-  image: node:16.16.0
+  <<: *default_node
   needs: [build_web_app]
   except:
     - main
@@ -84,7 +93,7 @@ deploy_preview:
 # Deploy Production for Web
 deploy_production:
   stage: deploy
-  image: node:16.16.0
+  <<: *default_node
   only:
     - main
   dependencies:

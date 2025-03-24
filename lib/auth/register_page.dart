@@ -85,7 +85,7 @@ class _RegisterPageState extends State<RegisterPage> {
             padding: const EdgeInsets.all(10),
             child: ElevatedButton(
               onPressed: signUp,
-              child: const Text("Registrieren"),
+              child: const Text("Konto erstellen"),
             ),
           ),
           const SizedBox(

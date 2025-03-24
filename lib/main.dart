@@ -1,3 +1,6 @@
+import "package:abo_tracker/group/group_service.dart";
+import "package:abo_tracker/user/user_service.dart";
+import "package:abo_tracker/user_group/user_group_service.dart";
 import "package:flutter/material.dart";
 import "package:abo_tracker/auth/auth_gate.dart";
 import "package:abo_tracker/auth/auth_service.dart";
@@ -56,7 +59,11 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = HomePage();
+        page = HomePage(
+          groupService: GroupService(),
+          userService: UserService(),
+          userGroupService: UserGroupService(),
+        );
       case 1:
         page = GroupPage();
       case 2:

@@ -8,16 +8,25 @@ import "package:abo_tracker/user_group/user_group_class.dart";
 import "package:abo_tracker/user_group/user_group_service.dart";
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final GroupService groupService;
+  final UserService userService;
+  final UserGroupService userGroupService;
+
+  const HomePage({
+    super.key,
+    required this.groupService,
+    required this.userService,
+    required this.userGroupService,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final GroupService _groupDatabase = GroupService();
-  final UserService _userDatabase = UserService();
-  final UserGroupService _userGroupDatabase = UserGroupService();
+  late final GroupService _groupDatabase = widget.groupService;
+  late final UserService _userDatabase = widget.userService;
+  late final UserGroupService _userGroupDatabase = widget.userGroupService;
 
   List<UserClass> users = <UserClass>[];
   List<UserGroupClass> userGroups = <UserGroupClass>[];

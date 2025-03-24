@@ -1,29 +1,51 @@
 #Cache for builds
 cache:
-  key: "$CI_COMMIT_REF_SLUG"
+  key: "$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
   paths:
     - .pub-cache
+  policy: pull-push
 
 stages:
   - test
   - build
   - deploy
 
+dependencies_install:
+  stage: test
+  image: ghcr.io/cirruslabs/flutter:stable
+  script:
+    - flutter pub get
+  cache:
+    key: "pub-cache-$CI_COMMIT_REF_SLUG"
+    paths:
+      - .pub-cache
+
 # Flutter Analyze Job
 flutter_analyze:
   stage: test
   image: ghcr.io/cirruslabs/flutter:stable
-  before_script:
-    - flutter pub get
+  dependencies:
+    - dependencies_install
   script:
     - flutter analyze
+
+# Flutter Test
+flutter_test:
+  stage: test
+  image: ghcr.io/cirruslabs/flutter:stable
+  dependencies:
+    - dependencies_install
+  script:
+    - flutter test
+  artifacts:
+    paths:
+      - test-report.json
+    expire_in: 1 week
 
 # Web Build
 build_web_app:
   stage: build
   image: ghcr.io/cirruslabs/flutter:stable
-  before_script:
-    - flutter pub get
   script:
     - flutter build web --base-href "/" --dart-define="SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" --dart-define="SUPABASE_URL=${SUPABASE_URL}"
   artifacts:
@@ -35,8 +57,6 @@ build_web_app:
 build_android_app:
   stage: build
   image: ghcr.io/cirruslabs/flutter:stable
-  before_script:
-    - flutter pub get
   script:
     - flutter build apk --dart-define="SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" --dart-define="SUPABASE_URL=${SUPABASE_URL}"
   artifacts:

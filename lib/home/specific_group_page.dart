@@ -6,6 +6,7 @@ import "package:abo_tracker/user_group/user_group_class.dart";
 import "package:abo_tracker/user_group/user_group_service.dart";
 import "package:abo_tracker/user_group_booking/user_group_booking_class.dart";
 import "package:abo_tracker/user_group_booking/user_group_booking_service.dart";
+import "package:intl/intl.dart";
 
 class SpecificGroupPage extends StatefulWidget {
   final UserGroupClass userGroupClass;
@@ -14,7 +15,13 @@ class SpecificGroupPage extends StatefulWidget {
   final int availableUnits;
   final String groupName;
 
-  SpecificGroupPage({super.key, required this.userGroupClass, required this.usersClass, required this.totalCost, required this.availableUnits, required this.groupName});
+  SpecificGroupPage(
+      {super.key,
+      required this.userGroupClass,
+      required this.usersClass,
+      required this.totalCost,
+      required this.availableUnits,
+      required this.groupName});
 
   @override
   State<SpecificGroupPage> createState() => _SpecificGroupPageState();
@@ -85,7 +92,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
   }
 
   void addNewBooking() {
-    _dateController.text = DateTime.now().toLocal().toString().split(" ")[0];
+    _dateController.text = DateFormat("dd.MM.yyyy").format(DateTime.now());
 
     showDialog(
         context: context,
@@ -116,7 +123,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                               );
                               if (pickedDate != null) {
                                 setState(() {
-                                  _dateController.text = pickedDate.toLocal().toString().split(" ")[0];
+                                  _dateController.text = DateFormat("dd.MM.yyyy").format(pickedDate);
                                 });
                               }
                             },
@@ -169,7 +176,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
   }
 
   void createBooking() async {
-    final BookingClass newBooking = BookingClass(time: DateTime.parse(_dateController.text));
+    final BookingClass newBooking = BookingClass(time: DateFormat("dd.MM.yyyy").parse(_dateController.text));
 
     try {
       BookingClass booking = await _bookingDatabase.createBooking(newBooking);
@@ -192,7 +199,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
   }
 
   void updateNewBooking(BookingClass booking) {
-    _dateController.text = booking.time.toString().split(" ")[0];
+    _dateController.text = DateFormat("dd.MM.yyyy").format(booking.time);
 
     List<UserClass> test = userGroupBookings
         .where((UserGroupBooking userGroupBooking) => userGroupBooking.bookingId == booking.id)
@@ -233,7 +240,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                               );
                               if (pickedDate != null) {
                                 setState(() {
-                                  _dateController.text = pickedDate.toLocal().toString().split(" ")[0];
+                                  _dateController.text = DateFormat("dd.MM.yyyy").format(pickedDate);
                                 });
                               }
                             },
@@ -289,20 +296,22 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     try {
       for (UserClass user in tempUsersSource) {
         if (!tempUsersModified.contains(user)) {
-          UserGroupClass test = userGroups.firstWhere((UserGroupClass group) => group.userId == user.id);
-          await _userGroupBookingDatabase
-              .deleteUserGroupBooking(userGroupBookings.firstWhere((UserGroupBooking userGroupBooking) => userGroupBooking.userGroupId == test.id));
-          await _userGroupDatabase.updateUserGroup(test, test.userId, test.groupId, -costPerBooking);
+          UserGroupClass userGroupClass = userGroups.firstWhere((UserGroupClass group) => group.userId == user.id);
+          await _userGroupBookingDatabase.deleteUserGroupBooking(
+              userGroupBookings.firstWhere((UserGroupBooking userGroupBooking) => userGroupBooking.userGroupId == userGroupClass.id));
+          await _userGroupDatabase.updateUserGroup(userGroupClass, userGroupClass.userId, userGroupClass.groupId, -costPerBooking);
         }
       }
 
       for (UserClass user in tempUsersModified) {
         if (!tempUsersSource.contains(user)) {
-          UserGroupClass test = userGroups.firstWhere((UserGroupClass group) => group.userId == user.id);
-          await _userGroupBookingDatabase.createUserGroupBooking(oldBooking.id, test);
-          await _userGroupDatabase.updateUserGroup(test, test.id, test.groupId, costPerBooking);
+          UserGroupClass userGroupClass = userGroups.firstWhere((UserGroupClass group) => group.userId == user.id);
+          await _userGroupBookingDatabase.createUserGroupBooking(oldBooking.id, userGroupClass);
+          await _userGroupDatabase.updateUserGroup(userGroupClass, userGroupClass.id, userGroupClass.groupId, costPerBooking);
         }
       }
+
+      await _bookingDatabase.updateBooking(oldBooking, DateFormat("dd.MM.yyyy").parse(_dateController.text));
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
@@ -419,7 +428,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                     child: Column(
                       children: <Widget>[
                         Text("Total: $totalCost.-"),
-                        Text("Saldo: ${totalCost - (bookings.length * costPerBooking)}.-"),
+                        Text("Rest: ${totalCost - (bookings.length * costPerBooking)}.-"),
                         Text("Verbleibend: ${availableUnits - bookings.length}"),
                       ],
                     ),
@@ -461,8 +470,8 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         child: ListTile(
-                          title: Text("Datum: ${bookingTime.toLocal().toString().split(' ')[0]}"),
-                          subtitle: Text("Benutzer: ${usersForBooking.join(', ')}"),
+                          title: Text("Datum: ${DateFormat("dd.MM.yyyy").format(bookingTime)}"),
+                          subtitle: Text("Benutzer: ${usersForBooking.join(", ")}"),
                           trailing: SizedBox(
                             width: 250,
                             child: Row(
@@ -473,8 +482,8 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
-                                        Text("Saldo: $intermediateCost"),
-                                        Text("Verbleibend: $intermediateAvailableUnits.-"),
+                                        Text("Rest: $intermediateCost.-"),
+                                        Text("Verbleibend: $intermediateAvailableUnits"),
                                       ],
                                     ),
                                   ),

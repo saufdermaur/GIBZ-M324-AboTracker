@@ -6,6 +6,8 @@ import "package:abo_tracker/user/user_page.dart";
 import "package:abo_tracker/group/group_page.dart";
 import "package:supabase_auth_ui/supabase_auth_ui.dart";
 
+import "package:flutter_localizations/flutter_localizations.dart";
+
 void main() async {
   const String supabaseUrl = String.fromEnvironment("SUPABASE_URL");
   const String supabaseAnonKey = String.fromEnvironment("SUPABASE_ANON_KEY");
@@ -28,6 +30,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark(
         useMaterial3: true,
       ),
+      localizationsDelegates: <LocalizationsDelegate<dynamic>>[
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: <Locale>[
+        Locale("de", "CH"),
+      ],
       home: AuthGate(),
     );
   }
@@ -68,14 +78,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 destinations: <NavigationRailDestination>[
                   NavigationRailDestination(
                     icon: Icon(Icons.home),
-                    label: Text("Home"),
+                    label: Text("Startseite"),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.group),
-                    label: Text("Groups"),
+                    label: Text("Gruppen"),
                   ),
-                  NavigationRailDestination(icon: Icon(Icons.person), label: Text("Users")),
-                  NavigationRailDestination(icon: Icon(Icons.key), label: Text("Sign out"))
+                  NavigationRailDestination(icon: Icon(Icons.person), label: Text("Benutzer")),
+                  NavigationRailDestination(icon: Icon(Icons.key), label: Text("Abmelden"))
                 ],
                 selectedIndex: selectedIndex,
                 onDestinationSelected: (int value) {

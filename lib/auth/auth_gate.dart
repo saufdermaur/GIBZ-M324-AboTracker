@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:abo_tracker/auth/login_page.dart';
-import 'package:abo_tracker/main.dart';
-import 'package:supabase_auth_ui/supabase_auth_ui.dart';
+import "package:flutter/material.dart";
+import "package:abo_tracker/auth/login_page.dart";
+import "package:abo_tracker/main.dart";
+import "package:supabase_auth_ui/supabase_auth_ui.dart";
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});

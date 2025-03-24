@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:abo_tracker/auth/auth_service.dart';
+import "package:flutter/material.dart";
+import "package:abo_tracker/auth/auth_service.dart";
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -85,7 +85,7 @@ class _RegisterPageState extends State<RegisterPage> {
             padding: const EdgeInsets.all(10),
             child: ElevatedButton(
               onPressed: signUp,
-              child: const Text("Registrieren"),
+              child: const Text("Konto erstellen"),
             ),
           ),
           const SizedBox(

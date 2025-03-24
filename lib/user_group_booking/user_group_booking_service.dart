@@ -1,6 +1,6 @@
-import 'package:abo_tracker/user_group/user_group_class.dart';
-import 'package:abo_tracker/user_group_booking/user_group_booking_class.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import "package:abo_tracker/user_group/user_group_class.dart";
+import "package:abo_tracker/user_group_booking/user_group_booking_class.dart";
+import "package:supabase_flutter/supabase_flutter.dart";
 
 class UserGroupBookingService {
   final SupabaseQueryBuilder _supabaseClient = Supabase.instance.client.from("users_groups_bookings");

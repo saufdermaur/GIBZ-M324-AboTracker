@@ -1,23 +1,32 @@
-import 'package:flutter/material.dart';
-import 'package:abo_tracker/group/group_class.dart';
-import 'package:abo_tracker/group/group_service.dart';
-import 'package:abo_tracker/home/specific_group_page.dart';
-import 'package:abo_tracker/user/user_class.dart';
-import 'package:abo_tracker/user/user_service.dart';
-import 'package:abo_tracker/user_group/user_group_class.dart';
-import 'package:abo_tracker/user_group/user_group_service.dart';
+import "package:flutter/material.dart";
+import "package:abo_tracker/group/group_class.dart";
+import "package:abo_tracker/group/group_service.dart";
+import "package:abo_tracker/home/specific_group_page.dart";
+import "package:abo_tracker/user/user_class.dart";
+import "package:abo_tracker/user/user_service.dart";
+import "package:abo_tracker/user_group/user_group_class.dart";
+import "package:abo_tracker/user_group/user_group_service.dart";
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final GroupService groupService;
+  final UserService userService;
+  final UserGroupService userGroupService;
+
+  const HomePage({
+    super.key,
+    required this.groupService,
+    required this.userService,
+    required this.userGroupService,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final GroupService _groupDatabase = GroupService();
-  final UserService _userDatabase = UserService();
-  final UserGroupService _userGroupDatabase = UserGroupService();
+  late final GroupService _groupDatabase = widget.groupService;
+  late final UserService _userDatabase = widget.userService;
+  late final UserGroupService _userGroupDatabase = widget.userGroupService;
 
   List<UserClass> users = <UserClass>[];
   List<UserGroupClass> userGroups = <UserGroupClass>[];
@@ -95,8 +104,8 @@ class _HomePageState extends State<HomePage> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Gesamtkosten: ${group.totalCost}.-'),
-                          Text('Total verfügbare Einheiten: ${group.availableUnits}'),
+                          Text("Gesamtkosten: ${group.totalCost}.-"),
+                          Text("Total verfügbare Einheiten: ${group.availableUnits}"),
                           Text(
                               "Benutzer: ${userGroups.where((UserGroupClass userGroup) => userGroup.groupId == group.id).map((UserGroupClass userGroup) => users.firstWhere((UserClass user) => user.id == userGroup.userId).nickname).join(', ')}")
                         ],

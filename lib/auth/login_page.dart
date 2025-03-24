@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:abo_tracker/auth/auth_service.dart';
-import 'package:abo_tracker/auth/register_page.dart';
+import "package:flutter/material.dart";
+import "package:abo_tracker/auth/auth_service.dart";
+import "package:abo_tracker/auth/register_page.dart";
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Anmelden"),
+        title: const Text("Einloggen"),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 50),

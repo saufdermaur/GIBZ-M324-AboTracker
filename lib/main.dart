@@ -1,14 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:abo_tracker/auth/auth_gate.dart';
-import 'package:abo_tracker/auth/auth_service.dart';
-import 'package:abo_tracker/home/home_page.dart';
-import 'package:abo_tracker/user/user_page.dart';
-import 'package:abo_tracker/group/group_page.dart';
-import 'package:supabase_auth_ui/supabase_auth_ui.dart';
+import "package:abo_tracker/group/group_service.dart";
+import "package:abo_tracker/user/user_service.dart";
+import "package:abo_tracker/user_group/user_group_service.dart";
+import "package:flutter/material.dart";
+import "package:abo_tracker/auth/auth_gate.dart";
+import "package:abo_tracker/auth/auth_service.dart";
+import "package:abo_tracker/home/home_page.dart";
+import "package:abo_tracker/user/user_page.dart";
+import "package:abo_tracker/group/group_page.dart";
+import "package:supabase_auth_ui/supabase_auth_ui.dart";
+
+import "package:flutter_localizations/flutter_localizations.dart";
 
 void main() async {
-  const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-  const String supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+  const String supabaseUrl = String.fromEnvironment("SUPABASE_URL");
+  const String supabaseAnonKey = String.fromEnvironment("SUPABASE_ANON_KEY");
 
   await Supabase.initialize(
     url: supabaseUrl,
@@ -24,10 +29,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Abo-Tracker',
+      title: "Abo-Tracker",
       theme: ThemeData.dark(
         useMaterial3: true,
       ),
+      localizationsDelegates: <LocalizationsDelegate<dynamic>>[
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: <Locale>[
+        Locale("de", "CH"),
+      ],
       home: AuthGate(),
     );
   }
@@ -46,7 +59,11 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = HomePage();
+        page = HomePage(
+          groupService: GroupService(),
+          userService: UserService(),
+          userGroupService: UserGroupService(),
+        );
       case 1:
         page = GroupPage();
       case 2:
@@ -55,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
         logOutPage();
         page = Scaffold();
       default:
-        throw UnimplementedError('no widget for $selectedIndex');
+        throw UnimplementedError("no widget for $selectedIndex");
     }
 
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
@@ -68,14 +85,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 destinations: <NavigationRailDestination>[
                   NavigationRailDestination(
                     icon: Icon(Icons.home),
-                    label: Text('Home'),
+                    label: Text("Startseite"),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.group),
-                    label: Text('Groups'),
+                    label: Text("Gruppen"),
                   ),
-                  NavigationRailDestination(icon: Icon(Icons.person), label: Text('Users')),
-                  NavigationRailDestination(icon: Icon(Icons.key), label: Text("Sign out"))
+                  NavigationRailDestination(icon: Icon(Icons.person), label: Text("Benutzer")),
+                  NavigationRailDestination(icon: Icon(Icons.key), label: Text("Abmelden"))
                 ],
                 selectedIndex: selectedIndex,
                 onDestinationSelected: (int value) {

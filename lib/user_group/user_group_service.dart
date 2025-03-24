@@ -1,3 +1,5 @@
+import "dart:math";
+
 import "package:abo_tracker/user/user_class.dart";
 import "package:abo_tracker/user_group/user_group_class.dart";
 import "package:supabase_flutter/supabase_flutter.dart";
@@ -26,13 +28,21 @@ class UserGroupService {
 
   // Update
   Future<void> updateUserGroup(UserGroupClass oldUserGroup, String userId, String groupId, int cost) async {
-    await _supabaseClient.update(<String, dynamic>{"user_id": userId, "group_id": groupId, "cost": cost}).eq("id", oldUserGroup.id);
+    int updatedCost = max(0, cost);
+    await _supabaseClient.update(<String, dynamic>{
+      "user_id": userId,
+      "group_id": groupId,
+      "cost": updatedCost,
+    }).eq("id", oldUserGroup.id);
   }
 
   // Update multiple userGroups
   Future<void> updateMultipleUserGroup(List<UserGroupClass> oldUserGroups, int cost) async {
     for (UserGroupClass oldUserGroup in oldUserGroups) {
-      await _supabaseClient.update(<String, dynamic>{"cost": oldUserGroup.cost + cost}).eq("id", oldUserGroup.id);
+      int updatedCost = max(0, oldUserGroup.cost + cost);
+      await _supabaseClient.update(<String, dynamic>{
+        "cost": updatedCost,
+      }).eq("id", oldUserGroup.id);
     }
   }
 

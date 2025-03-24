@@ -2,7 +2,7 @@
 .default_flutter: &default_flutter
   image: ghcr.io/cirruslabs/flutter:stable
 .default_node: &default_node
-  image: node:22.x
+  image: node:22-alpine
 
 # Cache for builds
 cache:
@@ -30,7 +30,7 @@ dependencies_install:
       - .pub-cache
 
 # Flutter Analyze Job
-flutter_analyze:
+analyze:
   stage: test
   <<: *default_flutter
   dependencies:
@@ -39,7 +39,7 @@ flutter_analyze:
     - flutter analyze
 
 # Flutter Test
-flutter_test:
+test:
   stage: test
   <<: *default_flutter
   dependencies:

@@ -351,7 +351,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-              title: const Text("Gruppe löschen"),
+              title: const Text("Buchung löschen"),
               actions: <Widget>[
                 Container(
                   padding: const EdgeInsets.all(10),

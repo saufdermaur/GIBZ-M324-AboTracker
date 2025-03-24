@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:abo_tracker/user/user_class.dart';
-import 'package:abo_tracker/user/user_service.dart';
+import "package:flutter/material.dart";
+import "package:abo_tracker/user/user_class.dart";
+import "package:abo_tracker/user/user_service.dart";
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -44,7 +44,7 @@ class _UserPageState extends State<UserPage> {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('Email: ${user.email}'),
+                        Text("Email: ${user.email}"),
                       ],
                     ),
                   ),

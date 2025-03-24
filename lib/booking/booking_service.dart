@@ -1,5 +1,5 @@
-import 'package:abo_tracker/booking/booking_class.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import "package:abo_tracker/booking/booking_class.dart";
+import "package:supabase_flutter/supabase_flutter.dart";
 
 class BookingService {
   final SupabaseQueryBuilder _supabaseClient = Supabase.instance.client.from("bookings");
@@ -21,12 +21,12 @@ class BookingService {
   }
 
   // Update
-  Future<void> updateBooking(BookingClass oldUserGroup, DateTime time) async {
-    await _supabaseClient.update(<String, DateTime>{"time": time}).eq("id", oldUserGroup.id);
+  Future<void> updateBooking(BookingClass oldBooking, DateTime time) async {
+    await _supabaseClient.update(<String, dynamic>{"time": time.toIso8601String()}).eq("id", oldBooking.id);
   }
 
   // Delete
-  Future<void> deleteBooking(BookingClass userGroup) async {
-    await _supabaseClient.delete().eq("id", userGroup.id);
+  Future<void> deleteBooking(BookingClass oldBooking) async {
+    await _supabaseClient.delete().eq("id", oldBooking.id); 
   }
 }

@@ -17,13 +17,18 @@ dependencies:
   supabase_auth_ui: ^0.5.4
   flutter_dotenv: ^5.2.1
   supabase_flutter: ^2.8.4
-  intl: ^0.20.2
+  intl: any
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0
+  mockito: ^5.4.5
+  build_runner: ^2.4.5
+  shared_preferences: ^2.5.2
 
 flutter:
   uses-material-design: true

@@ -1,4 +1,4 @@
-import 'package:supabase_auth_ui/supabase_auth_ui.dart';
+import "package:supabase_auth_ui/supabase_auth_ui.dart";
 
 class AuthService {
   final GoTrueClient _supabaseClientAuth = Supabase.instance.client.auth;

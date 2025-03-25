@@ -60,6 +60,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     getUsers();
   }
 
+  // Function to clear fields and optionally fetch users
   void cleanFields(bool fetchUsers) {
     Navigator.pop(context);
 
@@ -71,6 +72,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     }
   }
 
+  // Function to fetch users and related data
   Future<void> getUsers() async {
     try {
       final List<UserGroupClass> fetchedUserGroups = await _userGroupDatabase.getUserGroupGroupId(userGroupClass.groupId);
@@ -91,6 +93,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     }
   }
 
+  // Function to add a new booking
   void addNewBooking() {
     _dateController.text = DateFormat("dd.MM.yyyy").format(DateTime.now());
 
@@ -175,6 +178,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
         });
   }
 
+  // Function to create a new booking
   void createBooking() async {
     final BookingClass newBooking = BookingClass(time: DateFormat("dd.MM.yyyy").parse(_dateController.text));
 
@@ -198,6 +202,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     }
   }
 
+  // Function to update an existing booking
   void updateNewBooking(BookingClass booking) {
     _dateController.text = DateFormat("dd.MM.yyyy").format(booking.time);
 
@@ -292,6 +297,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
         });
   }
 
+  // Function to change an existing booking
   void changeBooking(BookingClass oldBooking, List<UserClass> tempUsersSource, List<UserClass> tempUsersModified) async {
     try {
       for (UserClass user in tempUsersSource) {
@@ -323,6 +329,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     }
   }
 
+  // Function to delete a booking
   void deleteGroupFunction(BookingClass booking) async {
     try {
       final List<UserGroupClass> mappedUserGroups = userGroupBookings
@@ -347,6 +354,7 @@ class _SpecificGroupPageState extends State<SpecificGroupPage> {
     }
   }
 
+  // Function to show a dialog for deleting a booking
   void deleteGroup(BookingClass booking) {
     showDialog(
         context: context,

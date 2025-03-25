@@ -13,8 +13,8 @@ class UserGroupBookingService {
   }
 
   // Create simple
-    Future<void> createUserGroupBooking(String bookingId, UserGroupClass userGroupBooking) async {
-      await _supabaseClient.insert(<String, String>{"users_groups_id": userGroupBooking.id, "bookings_id": bookingId});
+  Future<void> createUserGroupBooking(String bookingId, UserGroupClass userGroupBooking) async {
+    await _supabaseClient.insert(<String, String>{"users_groups_id": userGroupBooking.id, "bookings_id": bookingId});
   }
 
   //Read stream

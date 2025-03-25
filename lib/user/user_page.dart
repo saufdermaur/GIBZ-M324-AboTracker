@@ -10,17 +10,21 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
+  // Instance of UserService to interact with the user database
   final UserService userDatabase = UserService();
 
+  // Function to clean fields and pop the current context
   void cleanFields() {
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    // List to hold UserClass objects
     List<UserClass> users = <UserClass>[];
 
     return StreamBuilder<List<UserClass>>(
+      // Stream of user data from the database
       stream: userDatabase.stream,
       builder: (BuildContext context, AsyncSnapshot<List<UserClass>> snapshot) {
         if (!snapshot.hasData) {
@@ -29,6 +33,7 @@ class _UserPageState extends State<UserPage> {
           );
         }
 
+        // Assign the fetched data to the users list
         users = snapshot.data!;
         return Stack(
           children: <Widget>[

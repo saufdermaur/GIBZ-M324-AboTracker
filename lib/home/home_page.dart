@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    getUsers();
+    getUsers(); // Fetch users and user groups when the widget is initialized
   }
 
   Future<void> getUsers() async {
@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fehler: $e"))); // Show error message if fetching fails
       }
     }
   }
@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
     List<GroupClass> groups = <GroupClass>[];
 
     return StreamBuilder<List<GroupClass>>(
-      stream: _groupDatabase.stream,
+      stream: _groupDatabase.stream, // Listen to the stream of groups
       builder: (BuildContext context, AsyncSnapshot<List<GroupClass>> snapshot) {
         if (!snapshot.hasData) {
           return const Center(

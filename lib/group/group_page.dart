@@ -33,6 +33,7 @@ class _GroupPageState extends State<GroupPage> {
     getUsers();
   }
 
+  // Clears the input fields and optionally fetches users
   void cleanFields(bool fetchUsers) {
     Navigator.pop(context);
 
@@ -46,6 +47,7 @@ class _GroupPageState extends State<GroupPage> {
     }
   }
 
+  // Creates a new group and associates selected users with it
   void createGroup() async {
     final GroupClass newGroup = GroupClass(
         totalCost: int.parse(_totalCostController.text), availableUnits: int.parse(_costPerBookingController.text), name: _nameController.text);
@@ -63,6 +65,7 @@ class _GroupPageState extends State<GroupPage> {
     }
   }
 
+  // Fetches users and user groups from the database
   Future<void> getUsers() async {
     try {
       final List<UserClass> fetchedUsers = await _userDatabase.getUsers();
@@ -80,6 +83,7 @@ class _GroupPageState extends State<GroupPage> {
     }
   }
 
+  // Displays a dialog to add a new group
   void addNewGroup() async {
     showDialog(
       context: context,
@@ -165,6 +169,7 @@ class _GroupPageState extends State<GroupPage> {
     );
   }
 
+  // Updates an existing group and its associated users
   void changeGroup(GroupClass oldGroup, List<UserClass> tempUsersSource, List<UserClass> tempUsersModified) async {
     final int totalCost = int.parse(_totalCostController.text);
     final int availableUnits = int.parse(_costPerBookingController.text);
@@ -194,6 +199,7 @@ class _GroupPageState extends State<GroupPage> {
     }
   }
 
+  // Displays a dialog to update an existing group
   void updateGroup(GroupClass group) {
     _nameController.text = group.name;
     _costPerBookingController.text = group.availableUnits.toString();
@@ -290,6 +296,7 @@ class _GroupPageState extends State<GroupPage> {
         });
   }
 
+  // Deletes a group from the database
   void deleteGroupFunction(GroupClass group) async {
     try {
       await _groupDatabase.deleteGroup(group);
@@ -305,6 +312,7 @@ class _GroupPageState extends State<GroupPage> {
     }
   }
 
+  // Displays a dialog to confirm group deletion
   void deleteGroup(GroupClass group) {
     showDialog(
         context: context,

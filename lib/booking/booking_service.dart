@@ -6,7 +6,7 @@ class BookingService {
 
   // Create
   Future<BookingClass> createBooking(BookingClass newBooking) async {
-    final PostgrestMap response =  await _supabaseClient.insert(newBooking.toMap()).select().single();
+    final PostgrestMap response = await _supabaseClient.insert(newBooking.toMap()).select().single();
     return BookingClass.fromMap(response);
   }
 
@@ -27,6 +27,6 @@ class BookingService {
 
   // Delete
   Future<void> deleteBooking(BookingClass oldBooking) async {
-    await _supabaseClient.delete().eq("id", oldBooking.id); 
+    await _supabaseClient.delete().eq("id", oldBooking.id);
   }
 }

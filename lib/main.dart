@@ -8,7 +8,6 @@ import "package:abo_tracker/home/home_page.dart";
 import "package:abo_tracker/user/user_page.dart";
 import "package:abo_tracker/group/group_page.dart";
 import "package:supabase_auth_ui/supabase_auth_ui.dart";
-
 import "package:flutter_localizations/flutter_localizations.dart";
 
 void main() async {
@@ -20,6 +19,7 @@ void main() async {
     anonKey: supabaseAnonKey,
   );
 
+  // Run the app
   runApp(MyApp());
 }
 
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
       supportedLocales: <Locale>[
         Locale("de", "CH"),
       ],
-      home: AuthGate(),
+      home: AuthGate(), // Show AuthGate as the home page
     );
   }
 }
@@ -52,11 +52,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int selectedIndex = 0;
+  int selectedIndex = 0; // Track the selected index for NavigationRail
 
   @override
   Widget build(BuildContext context) {
     Widget page;
+    // Determine which page to show based on selectedIndex
     switch (selectedIndex) {
       case 0:
         page = HomePage(
@@ -105,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Expanded(
               child: Container(
                 color: Theme.of(context).colorScheme.primaryContainer,
-                child: page,
+                child: page, // Display the selected page
               ),
             ),
           ],
@@ -115,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+// Function to handle user logout
 Future<void> logOutPage() async {
   final AuthService authService = AuthService();
 

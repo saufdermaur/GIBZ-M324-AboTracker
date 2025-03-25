@@ -15,6 +15,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // Function to handle login
   void login() async {
     final String email = _emailController.text;
     final String password = _passwordController.text;
@@ -37,6 +38,7 @@ class _LoginPageState extends State<LoginPage> {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 50),
         children: <Widget>[
+          // Email input field
           Container(
             padding: const EdgeInsets.all(10),
             child: TextField(
@@ -44,6 +46,7 @@ class _LoginPageState extends State<LoginPage> {
               decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Email"),
             ),
           ),
+          // Password input field
           Container(
             padding: const EdgeInsets.all(10),
             child: TextField(
@@ -55,6 +58,7 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(
             height: 12,
           ),
+          // Login button
           Container(
             padding: const EdgeInsets.all(10),
             child: ElevatedButton(
@@ -65,6 +69,7 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(
             height: 12,
           ),
+          // Navigation to Register Page
           GestureDetector(
             onTap: () => Navigator.push(context, MaterialPageRoute<RegisterPage>(builder: (BuildContext context) => const RegisterPage())),
             child: Center(

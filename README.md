@@ -45,6 +45,7 @@ Damit die oben genannten Funktionalität erfolgreich umgesetzt werden können, s
 ![Klassendiagramm](/Assets/class-diagram.png)
 
 ## Komponentendiagramm
+
 ![Komponentendiagramm](/Assets/component-diagram.png)
 
 Die Kommunikation zwischen den Komponenten erfolgt über standardisierte API-Schnittstellen. Durch die Nutzung verschiedener Services unterschiedlicher Anbieter wird eine lose gekoppelte Architektur gewährleistet. Auf ein dediziertes Backend wird verzichtet, da Supabase eine Client-Library zur Verfügung stellt, die direkte Datenbankanfragen ermöglicht. Dadurch wird die Komplexität reduziert, ohne die Funktionalität einzuschränken.
